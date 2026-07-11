@@ -1,0 +1,125 @@
+/* ==========================================================================
+   RepoMind AI — About Page
+   ========================================================================== */
+
+.about-hero {
+  position: relative;
+  z-index: 2;
+  padding: 170px 32px 90px;
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  letter-spacing: -0.03em;
+  max-width: 780px;
+  margin: 22px auto 0;
+  line-height: 1.15;
+}
+
+.about-hero p {
+  max-width: 600px;
+  margin: 22px auto 0;
+  color: var(--ink-1);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 30px 20px;
+  border-radius: var(--radius-m);
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  background: linear-gradient(100deg, var(--cyan), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-label {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+/* story timeline — a real chronological sequence, so numbering earns its keep */
+.timeline {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 26px;
+  padding: 26px 0;
+  border-top: 1px solid var(--panel-border);
+}
+.timeline-item:first-child { border-top: none; }
+
+.timeline-year {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--cyan);
+  padding-top: 3px;
+}
+
+.timeline-item h4 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+.timeline-item p { color: var(--ink-1); font-size: 0.92rem; line-height: 1.7; }
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.team-card { text-align: center; padding: 26px 18px; border-radius: var(--radius-m); }
+.team-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+}
+.team-name { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; margin-bottom: 4px; }
+.team-role { font-size: 0.8rem; color: var(--ink-2); font-family: var(--font-mono); }
+
+@media (max-width: 900px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .value-grid { grid-template-columns: 1fr; }
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .timeline-item { grid-template-columns: 1fr; gap: 8px; }
+}

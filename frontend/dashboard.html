@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — RepoMind AI</title>
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/app.css" />
+<link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="app">
+
+<div class="app-shell">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-brand"><span class="brand-mark"></span>RepoMind AI</a>
+
+    <div class="sidebar-section-label">Workspace</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="chat.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        AI Chat
+      </a>
+      <a href="explorer.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Explorer
+      </a>
+      <a href="architecture.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 6a9 9 0 0 1-9 9"/></svg>
+        Architecture
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+    </nav>
+
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav">
+      <a href="settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="profile.html" class="sidebar-user">
+        <span class="sidebar-user-avatar"></span>
+        <span>
+          <div class="sidebar-user-name">Ada Lovelace</div>
+          <div class="sidebar-user-plan">Solo plan</div>
+        </span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-crumb">
+        <button class="icon-btn mobile-menu-btn" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <strong>Dashboard</strong>
+      </div>
+      <div class="topbar-actions">
+        <a href="index.html" class="btn btn-ghost btn-sm">Back to site</a>
+        <button class="btn btn-primary btn-sm" data-open-upload>+ Connect Repository</button>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <div class="dash-head">
+        <div>
+          <h1>Welcome back, Ada</h1>
+          <p>3 repositories indexed · ask any of them a question in Chat</p>
+        </div>
+      </div>
+
+      <div class="repo-grid" id="repo-grid">
+        <button class="repo-connect-card" data-open-upload>
+          <span class="plus-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          <h3>Connect a repository</h3>
+          <p>GitHub URL or ZIP upload</p>
+        </button>
+
+        <article class="repo-card glass">
+          <div class="repo-card-top">
+            <div class="repo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="repo-status"><span></span>Indexed</span>
+          </div>
+          <div>
+            <div class="repo-name">payments-service</div>
+            <div class="repo-path">acme/payments-service · 3 days ago</div>
+          </div>
+          <div class="repo-lang-row">
+            <span class="lang-chip">Python</span><span class="lang-chip">FastAPI</span><span class="lang-chip">Postgres</span>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat"><b>312</b><span>Functions</span></div>
+            <div class="repo-stat"><b>48</b><span>Classes</span></div>
+            <div class="repo-stat"><b>4.2</b><span>Complexity</span></div>
+          </div>
+          <div class="repo-card-actions">
+            <a href="chat.html?repo=payments-service" class="btn btn-primary btn-sm">Open Chat</a>
+            <a href="#" class="btn btn-ghost btn-sm">Explore</a>
+          </div>
+        </article>
+
+        <article class="repo-card glass">
+          <div class="repo-card-top">
+            <div class="repo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="repo-status"><span></span>Indexed</span>
+          </div>
+          <div>
+            <div class="repo-name">storefront-web</div>
+            <div class="repo-path">acme/storefront-web · 1 week ago</div>
+          </div>
+          <div class="repo-lang-row">
+            <span class="lang-chip">TypeScript</span><span class="lang-chip">React</span>
+          </div>
+          <div class="repo-stats">
+            <div class="repo-stat"><b>890</b><span>Functions</span></div>
+            <div class="repo-stat"><b>120</b><span>Classes</span></div>
+            <div class="repo-stat"><b>3.6</b><span>Complexity</span></div>
+          </div>
+          <div class="repo-card-actions">
+            <a href="chat.html?repo=storefront-web" class="btn btn-primary btn-sm">Open Chat</a>
+            <a href="#" class="btn btn-ghost btn-sm">Explore</a>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ UPLOAD MODAL ============ -->
+<div class="modal-overlay" id="upload-overlay">
+  <div class="modal glass">
+    <div class="modal-head" id="modal-head">
+      <h3>Connect a repository</h3>
+      <button class="modal-close" id="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <form id="upload-form">
+      <div class="upload-tabs">
+        <button type="button" class="upload-tab active" data-panel="panel-url">GitHub URL</button>
+        <button type="button" class="upload-tab" data-panel="panel-zip">ZIP Upload</button>
+      </div>
+
+      <div class="upload-panel active" id="panel-url">
+        <div class="field">
+          <label for="github-url">Repository URL</label>
+          <div class="field-input">
+            <input type="text" id="github-url" placeholder="https://github.com/acme/checkout-api" />
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-panel" id="panel-zip">
+        <div class="dropzone" id="dropzone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <p>Drag and drop a .zip, or click to browse</p>
+          <span>Up to 500MB</span>
+          <input type="file" id="zip-input" accept=".zip" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary auth-submit" style="margin-top:22px;">Start indexing</button>
+    </form>
+
+    <!-- staged cinematic loader -->
+    <div class="stage-loader" id="stage-loader">
+      <div class="stage-visual" id="stage-ring-wrap"><div class="stage-ring"></div></div>
+      <div class="stage-list">
+        <div class="stage-row"><span class="stage-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reading files</div>
+        <div class="stage-row"><span class="stage-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Parsing code</div>
+        <div class="stage-row"><span class="stage-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Generating embeddings</div>
+        <div class="stage-row"><span class="stage-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Building knowledge graph</div>
+        <div class="stage-row"><span class="stage-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Analyzing dependencies</div>
+      </div>
+      <div class="stage-footer" id="stage-footer-text">Reading files…</div>
+
+      <div class="stage-done-actions" id="stage-done-actions">
+        <button type="button" class="btn btn-ghost" id="modal-back-to-dash">Stay on dashboard</button>
+        <a href="chat.html" class="btn btn-primary" id="open-new-chat">Chat with <span id="open-new-chat-label">it</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js" defer></script>
+<script src="js/dashboard.js" defer></script>
+</body>
+</html>

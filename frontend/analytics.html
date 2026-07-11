@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analytics — RepoMind AI</title>
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/app.css" />
+<link rel="stylesheet" href="css/analytics.css" />
+</head>
+<body class="app">
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-brand"><span class="brand-mark"></span>RepoMind AI</a>
+    <div class="sidebar-repo"><span class="sidebar-repo-dot"></span><span class="sidebar-repo-name" id="sidebar-repo-name">payments-service</span></div>
+
+    <div class="sidebar-section-label">Workspace</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="chat.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        AI Chat
+      </a>
+      <a href="explorer.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Explorer
+      </a>
+      <a href="architecture.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 6a9 9 0 0 1-9 9"/></svg>
+        Architecture
+      </a>
+      <a href="analytics.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+    </nav>
+
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav">
+      <a href="settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="profile.html" class="sidebar-user">
+        <span class="sidebar-user-avatar"></span>
+        <span><div class="sidebar-user-name">Ada Lovelace</div><div class="sidebar-user-plan">Solo plan</div></span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-crumb">
+        <button class="icon-btn mobile-menu-btn" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <a href="dashboard.html" style="color:var(--ink-2);">Dashboard</a><span class="sep">/</span><strong id="repo-crumb">payments-service</strong><span class="sep">/</span><span>Analytics</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="chat.html" class="btn btn-primary btn-sm">Ask in Chat</a>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <div class="stat-grid">
+        <div class="stat-tile glass"><div class="stat-tile-label">Total files</div><div class="stat-tile-value" data-count="412">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Languages</div><div class="stat-tile-value" data-count="4">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Functions</div><div class="stat-tile-value" data-count="312">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Classes</div><div class="stat-tile-value" data-count="48">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Complexity score</div><div class="stat-tile-value grad" data-count="4" data-suffix=".2">0</div><div class="stat-tile-sub">lower is better</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Security score</div><div class="stat-tile-value grad" data-count="82" data-suffix="/100">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Docs coverage</div><div class="stat-tile-value grad" data-count="61" data-suffix="%">0</div></div>
+        <div class="stat-tile glass"><div class="stat-tile-label">Duplicate code</div><div class="stat-tile-value" data-count="3" data-suffix=".8%">0</div></div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card glass">
+          <h3>Complexity by module</h3>
+          <div class="chart-sub">Cyclomatic complexity, averaged per module</div>
+          <canvas id="complexity-chart"></canvas>
+        </div>
+        <div class="chart-card glass">
+          <h3>Language breakdown</h3>
+          <div class="chart-sub">Share of lines of code</div>
+          <canvas id="language-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="tab-row glass">
+        <button class="analytics-tab active" data-panel="panel-security">Security Findings</button>
+        <button class="analytics-tab" data-panel="panel-api">API Endpoints</button>
+        <button class="analytics-tab" data-panel="panel-perf">Performance</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-security">
+        <div class="finding-list">
+          <div class="finding-row glass">
+            <span class="severity-badge severity-high">High</span>
+            <div>
+              <div class="finding-title">Hardcoded API key in test fixture</div>
+              <div class="finding-desc">A live-looking Stripe test key is committed directly instead of loaded from environment config.</div>
+              <div class="finding-file">tests/fixtures/stripe_mock.py:14</div>
+            </div>
+          </div>
+          <div class="finding-row glass">
+            <span class="severity-badge severity-medium">Medium</span>
+            <div>
+              <div class="finding-title">Weak JWT expiry on refresh tokens</div>
+              <div class="finding-desc">Refresh tokens are valid for 30 days with no rotation tracking — a leaked token stays usable for a long window.</div>
+              <div class="finding-file">auth/jwt.py:41</div>
+            </div>
+          </div>
+          <div class="finding-row glass">
+            <span class="severity-badge severity-medium">Medium</span>
+            <div>
+              <div class="finding-title">Raw SQL string formatting</div>
+              <div class="finding-desc">One query builds a WHERE clause with an f-string instead of a bound parameter.</div>
+              <div class="finding-file">services/reporting.py:88</div>
+            </div>
+          </div>
+          <div class="finding-row glass">
+            <span class="severity-badge severity-low">Low</span>
+            <div>
+              <div class="finding-title">Missing rate limiting on /auth/login</div>
+              <div class="finding-desc">No throttling on repeated failed login attempts for the same account.</div>
+              <div class="finding-file">auth/login.py:1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-api">
+        <div class="glass" style="border-radius:var(--radius-m); overflow:hidden;">
+          <table class="endpoint-table">
+            <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Handler</th></tr></thead>
+            <tbody>
+              <tr><td><span class="method-badge method-post">POST</span></td><td class="endpoint-path">/auth/login</td><td class="endpoint-auth">None</td><td class="endpoint-auth">auth/login.py</td></tr>
+              <tr><td><span class="method-badge method-post">POST</span></td><td class="endpoint-path">/auth/refresh</td><td class="endpoint-auth">Refresh token</td><td class="endpoint-auth">auth/login.py</td></tr>
+              <tr><td><span class="method-badge method-get">GET</span></td><td class="endpoint-path">/users/{id}</td><td class="endpoint-auth">Access token</td><td class="endpoint-auth">api/endpoints/users.py</td></tr>
+              <tr><td><span class="method-badge method-put">PUT</span></td><td class="endpoint-path">/users/{id}</td><td class="endpoint-auth">Access token</td><td class="endpoint-auth">api/endpoints/users.py</td></tr>
+              <tr><td><span class="method-badge method-post">POST</span></td><td class="endpoint-path">/transactions</td><td class="endpoint-auth">Access token</td><td class="endpoint-auth">api/endpoints/transactions.py</td></tr>
+              <tr><td><span class="method-badge method-delete">DELETE</span></td><td class="endpoint-path">/transactions/{id}</td><td class="endpoint-auth">Access token + owner</td><td class="endpoint-auth">api/endpoints/transactions.py</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-perf">
+        <div class="perf-list">
+          <div class="perf-row glass">
+            <div><div class="finding-title">Repeated file-walk logic</div><div class="perf-issue">services/repo_parser.py and services/graph_builder.py duplicate ~40 lines of traversal code.</div></div>
+            <div class="perf-metric">~40 LOC overlap</div>
+          </div>
+          <div class="perf-row glass">
+            <div><div class="finding-title">Slow function: build_graph()</div><div class="perf-issue">O(n²) edge lookup on large repos — noticeable above ~5,000 files.</div></div>
+            <div class="perf-metric">services/graph_builder.py:12</div>
+          </div>
+          <div class="perf-row glass">
+            <div><div class="finding-title">Unused imports</div><div class="perf-issue">3 unused imports found, all in test files.</div></div>
+            <div class="perf-metric">3 occurrences</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js" defer></script>
+<script src="js/analytics.js" defer></script>
+</body>
+</html>

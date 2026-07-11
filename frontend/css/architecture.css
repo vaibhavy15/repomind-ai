@@ -1,0 +1,51 @@
+/* ==========================================================================
+   RepoMind AI — Architecture Viewer
+   ========================================================================== */
+
+.arch-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding: 5px;
+  border-radius: var(--radius-m);
+  width: fit-content;
+}
+.arch-tab {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-1);
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+.arch-tab.active { background: linear-gradient(135deg, var(--blue-soft), var(--violet-soft)); color: var(--ink-0); }
+.arch-tab:hover:not(.active) { background: var(--panel-hover); color: var(--ink-0); }
+
+.arch-diagram-card {
+  border-radius: var(--radius-l);
+  padding: 30px;
+  overflow-x: auto;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arch-diagram-card .mermaid { width: 100%; }
+
+.arch-note {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.arch-note svg { width: 14px; height: 14px; stroke: var(--cyan); flex-shrink: 0; }
+
+.arch-loading {
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}

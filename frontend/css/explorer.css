@@ -1,0 +1,126 @@
+/* ==========================================================================
+   RepoMind AI — Repository Explorer
+   ========================================================================== */
+
+.explorer-shell {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100%;
+  gap: 0;
+}
+
+.tree-pane {
+  border-right: 1px solid var(--panel-border);
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+.tree-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-s);
+  margin-bottom: 16px;
+}
+.tree-search svg { width: 14px; height: 14px; stroke: var(--ink-2); flex-shrink: 0; }
+.tree-search input {
+  flex: 1; background: none; border: none; color: var(--ink-0);
+  font-size: 13px; font-family: var(--font-body);
+}
+.tree-search input::placeholder { color: var(--ink-3); }
+.tree-search input:focus { outline: none; }
+
+.tree { font-size: 13px; }
+.tree ul { list-style: none; margin: 0; padding-left: 16px; }
+.tree > ul { padding-left: 0; }
+
+.tree-folder, .tree-file {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--ink-1);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  white-space: nowrap;
+}
+.tree-folder:hover, .tree-file:hover { background: var(--panel-hover); color: var(--ink-0); }
+.tree-file.active { background: var(--blue-soft); color: var(--ink-0); }
+
+.tree-folder svg, .tree-file svg { width: 14px; height: 14px; flex-shrink: 0; stroke: var(--ink-2); }
+.tree-folder svg { stroke: var(--cyan); }
+.tree-file.active svg { stroke: var(--cyan); }
+
+.tree-folder .chev { width: 10px; height: 10px; transition: transform 0.25s var(--ease); stroke: var(--ink-3); }
+.tree-node.collapsed > ul { display: none; }
+.tree-node.collapsed > .tree-folder .chev { transform: rotate(-90deg); }
+
+.tree-hidden { display: none !important; }
+
+/* -- preview pane -- */
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.preview-path {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.preview-path svg { width: 14px; height: 14px; stroke: var(--cyan); }
+
+.preview-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 26px;
+}
+
+.preview-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink-2);
+  gap: 10px;
+}
+.preview-empty svg { width: 34px; height: 34px; stroke: var(--ink-3); }
+
+.preview-code {
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
+}
+.preview-code pre { margin: 0; padding: 18px 20px; overflow-x: auto; font-size: 13px; background: #0a0c1c; }
+.preview-code code { font-family: var(--font-mono); }
+
+.explain-panel {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-radius: var(--radius-m);
+  display: none;
+}
+.explain-panel.show { display: block; }
+.explain-panel .eyebrow { margin-bottom: 10px; }
+.explain-panel p { font-size: 13.5px; color: var(--ink-1); line-height: 1.75; }
+
+@media (max-width: 900px) {
+  .explorer-shell { grid-template-columns: 1fr; }
+  .tree-pane { display: none; }
+  .tree-pane.show { display: block; position: fixed; inset: 0 20% 0 0; z-index: 40; background: var(--void); }
+}

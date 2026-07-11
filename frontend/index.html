@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RepoMind AI — Understand Any Codebase Like Never Before</title>
+<meta name="description" content="Upload a repository and ask it questions in plain language. RepoMind AI maps your architecture, traces your logic, and cites the exact files behind every answer." />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/landing.css" />
+</head>
+<body>
+
+<canvas id="galaxy-canvas"></canvas>
+<div class="page-veil"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="container">
+    <a href="#" class="brand"><span class="brand-mark"></span>RepoMind AI</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign up free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-eyebrow eyebrow">Now reading Python, TypeScript, Go &amp; Rust</div>
+  <h1>Understand Any Codebase<br /><span class="grad">Like Never Before.</span></h1>
+  <p class="hero-sub">
+    Point RepoMind at a repository — GitHub URL or ZIP — and it reads every file,
+    maps how they connect, and lets you ask questions like <code>where is JWT generated?</code>
+    in plain English. Every answer cites the exact file it came from.
+  </p>
+  <div class="hero-actions">
+    <a href="signup.html" class="btn btn-primary">Upload Repository</a>
+    <a href="#proof" class="btn btn-ghost">Try Demo</a>
+  </div>
+  <div class="hero-meta">
+    <div><strong>40+</strong>&nbsp;languages parsed</div>
+    <div><strong>&lt;90s</strong>&nbsp;to index a 10k-file repo</div>
+    <div><strong>0</strong>&nbsp;code stored after you disconnect</div>
+  </div>
+</header>
+
+<!-- ============ PROOF / CHAT WINDOW ============ -->
+<section class="proof" id="proof">
+  <div class="proof-window glass" data-reveal>
+    <div class="proof-bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="path">repomind — chat — acme/payments-service</span>
+    </div>
+    <div class="proof-body">
+      <div class="proof-q">Where is JWT generated, and is it validated on every request?</div>
+      <div class="proof-a" id="proof-answer" style="opacity:0;">
+        JWTs are signed in <span class="cite">auth/jwt.py</span> using RS256, then attached to the
+        session in <span class="cite">auth/login.py</span>. Every incoming request passes through
+        <span class="cite">auth/middleware.py</span>, which verifies the signature and expiry before
+        the route handler runs — so validation is enforced globally, not per-endpoint.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="features">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">What it does</span>
+    <h2>Everything you'd ask a senior engineer</h2>
+    <p>Not a search bar over your code — a system that actually understands how it fits together.</p>
+  </div>
+
+  <div class="feature-grid" data-reveal-group>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <h3>Repository Q&amp;A</h3>
+      <p>Ask "how does login work?" or "explain the payments flow" and get an answer grounded in your actual files — not a generic explanation.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18.7 8l-5.1 5.2-3-3L4.5 16.3"/></svg></div>
+      <h3>Architecture, mapped</h3>
+      <p>Frontend flow, backend flow, and database flow rendered as live diagrams — regenerated the moment your code changes.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg></div>
+      <h3>Security scanner</h3>
+      <p>Flags hardcoded secrets, weak JWT config, missing auth checks, and injection-prone queries before they ship.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+      <h3>README, generated</h3>
+      <p>Installation steps, environment variables, folder structure, and deployment notes — written from what your code actually does.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 10 11 4 5M12 19h8"/></svg></div>
+      <h3>API explorer</h3>
+      <p>Every GET, POST, PUT, and DELETE detected automatically, with plain-language notes on purpose, payloads, and auth.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></div>
+      <h3>Performance audit</h3>
+      <p>Surfaces slow functions, duplicated logic, dead code, and unused imports, with concrete suggestions to clean each one up.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="section" id="architecture">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">How it works</span>
+    <h2>Three steps between a repo and an answer</h2>
+  </div>
+  <div class="process" data-reveal-group>
+    <div class="process-step" data-reveal>
+      <div class="process-num">01</div>
+      <h4>Connect a repository</h4>
+      <p>Paste a GitHub URL or drag in a ZIP. Public or private, any size.</p>
+    </div>
+    <div class="process-step" data-reveal>
+      <div class="process-num">02</div>
+      <h4>RepoMind indexes it</h4>
+      <p>Files are parsed, embedded, and mapped into a knowledge graph of how your code actually connects.</p>
+    </div>
+    <div class="process-step" data-reveal>
+      <div class="process-num">03</div>
+      <h4>Ask anything</h4>
+      <p>Chat with the codebase in plain language. Every answer cites the file it came from.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Teams shipping faster</span>
+    <h2>Onboarding used to take a week</h2>
+  </div>
+  <div class="testimonial-row" data-reveal-group>
+    <div class="testimonial glass" data-reveal>
+      <p>New hires used to shadow someone for two weeks before touching our services. Now they ask RepoMind and open a PR by day three.</p>
+      <div class="t-person"><div class="t-avatar"></div><div><div class="t-name">Priya Nair</div><div class="t-role">Staff Engineer, fintech infra</div></div></div>
+    </div>
+    <div class="testimonial glass" data-reveal>
+      <p>The security scan caught a hardcoded staging key that had been sitting in a config file for months. Paid for itself in one scan.</p>
+      <div class="t-person"><div class="t-avatar"></div><div><div class="t-name">Marcus Webb</div><div class="t-role">Eng Lead, logistics platform</div></div></div>
+    </div>
+    <div class="testimonial glass" data-reveal>
+      <p>We inherited a legacy monolith with no docs. The architecture map alone told us more in ten minutes than the previous team's wiki.</p>
+      <div class="t-person"><div class="t-avatar"></div><div><div class="t-name">Elena Sokolova</div><div class="t-role">CTO, healthtech startup</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING (placeholder) ============ -->
+<section class="section" id="pricing">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Pricing</span>
+    <h2>Start free, scale with your repos</h2>
+    <p>Full pricing details live on the dashboard once you're signed in — this is a preview.</p>
+  </div>
+  <div class="feature-grid" data-reveal-group>
+    <article class="feature-card glass" data-reveal>
+      <h3>Solo</h3>
+      <p>1 repository, 500 questions/month, public repos only. Free while in preview.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <h3>Team</h3>
+      <p>Unlimited repos, private repo support, shared workspace, security scanning.</p>
+    </article>
+    <article class="feature-card glass" data-reveal>
+      <h3>Enterprise</h3>
+      <p>SSO, on-prem indexing, audit logs, and a dedicated onboarding engineer.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Questions</span>
+    <h2>Before you connect a repo</h2>
+  </div>
+  <div class="faq-list" data-reveal>
+    <div class="faq-item glass">
+      <button class="faq-q">Which languages does RepoMind understand?<span class="plus"></span></button>
+      <div class="faq-a"><p>Python, JavaScript, TypeScript, Go, Rust, Java, and 35+ others. Parsing quality is deepest for Python, JS/TS, and Go.</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q">Is my code stored or used for training?<span class="plus"></span></button>
+      <div class="faq-a"><p>Your code is indexed to answer your questions and is never used to train models. You can wipe an indexed repository at any time from Settings.</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q">Can I connect a private repository?<span class="plus"></span></button>
+      <div class="faq-a"><p>Yes, on the Team and Enterprise plans. RepoMind requests read-only access and never writes back to your repo.</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q">How is this different from an AI code assistant like Copilot?<span class="plus"></span></button>
+      <div class="faq-a"><p>Copilot helps you write the next line. RepoMind is built to explain the whole system — architecture, data flow, and the reasoning behind existing code.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section">
+  <div class="final-cta glass" data-reveal>
+    <h2>Your codebase, finally legible.</h2>
+    <p>Connect a repository and ask your first question in under two minutes.</p>
+    <div class="hero-actions">
+      <a href="signup.html" class="btn btn-primary">Upload Repository</a>
+      <a href="#proof" class="btn btn-ghost">Try Demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="brand"><span class="brand-mark"></span>RepoMind AI</a>
+      <p>An AI-powered codebase understanding platform. Upload a repository, and ask it anything.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Account</h5>
+      <ul>
+        <li><a href="login.html">Log in</a></li>
+        <li><a href="signup.html">Sign up</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 RepoMind AI</span>
+    <span>Built for reading code, not replacing it.</span>
+  </div>
+</footer>
+
+<script type="module" src="js/galaxy.js"></script>
+<script src="js/main.js" defer></script>
+</body>
+</html>
