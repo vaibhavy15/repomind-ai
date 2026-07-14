@@ -7,28 +7,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* -- surfaces -- */
-  --void: #05060d;
-  --void-deep: #020208;
-  --nebula: #0b0f2e;
-  --nebula-soft: #10143a;
+  /* -- surfaces: warm umber-black instead of blue-black -- */
+  --void: #0b0906;
+  --void-deep: #050403;
+  --nebula: #241a10;
+  --nebula-soft: #33240f;
   --panel: rgba(255, 255, 255, 0.035);
   --panel-border: rgba(255, 255, 255, 0.09);
   --panel-hover: rgba(255, 255, 255, 0.06);
 
-  /* -- neon trio -- */
-  --blue: #4d7fff;
-  --blue-soft: #4d7fff33;
-  --cyan: #4deaff;
-  --cyan-soft: #4deaff33;
-  --violet: #a855f7;
-  --violet-soft: #a855f733;
+  /* -- accent trio: citrine gold / petrol teal / dusty rose -- */
+  --blue: #e6b450;
+  --blue-soft: #e6b45033;
+  --cyan: #3ecfb2;
+  --cyan-soft: #3ecfb233;
+  --violet: #d1567c;
+  --violet-soft: #d1567c33;
 
-  /* -- text -- */
-  --ink-0: #f4f6ff;
-  --ink-1: #b7bcdb;
-  --ink-2: #767c9e;
-  --ink-3: #454a6b;
+  /* -- text: warm ivory instead of cool white -- */
+  --ink-0: #f7f0e2;
+  --ink-1: #c9bfa8;
+  --ink-2: #8c8370;
+  --ink-3: #4f483a;
 
   /* -- type -- */
   --font-display: 'Space Grotesk', sans-serif;

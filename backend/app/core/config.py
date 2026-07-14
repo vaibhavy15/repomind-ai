@@ -28,11 +28,24 @@ class Settings(BaseSettings):
     GEMINI_MODEL: str = "gemini-2.5-flash"
     GEMINI_EMBEDDING_MODEL: str = "text-embedding-004"
 
+    # -- oauth (GitHub / Google) --
+    # Register real apps to get these — see backend/README.md for exact steps.
+    # Leave a provider's client id blank to disable that provider's buttons.
+    BACKEND_URL: str = "http://localhost:8000"   # used to build the OAuth callback URL
+    FRONTEND_URL: str = "http://localhost:5500"  # where we send the user after login
+    GITHUB_CLIENT_ID: str | None = None
+    GITHUB_CLIENT_SECRET: str | None = None
+    GOOGLE_CLIENT_ID: str | None = None
+    GOOGLE_CLIENT_SECRET: str | None = None
+
     # -- vector store --
     CHROMA_PERSIST_DIR: str = "./chroma_data"
 
     # -- cors --
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:5500", "http://127.0.0.1:5500"]
+    # "*" is safe here because auth uses bearer tokens, not cookies, so
+    # allow_credentials stays False. Tighten this to your real frontend
+    # origin(s) before deploying anywhere public.
+    ALLOWED_ORIGINS: list[str] = ["*"]
 
 
 settings = Settings()

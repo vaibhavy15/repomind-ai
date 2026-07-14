@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.db.models import Conversation, Message, Repository, User
 from app.db.session import get_db
-from app.schemas.chat import AskRequest, AskResponse, MessageOut
+from app.schemas.chat import AskRequest, AskResponse, ConversationOut, MessageOut
 from app.services import embeddings_service
+from app.services.activity_service import log_event
 from app.services.gemini_service import generate_answer
 
 router = APIRouter(prefix="/repos/{repo_id}/chat", tags=["chat"])
@@ -50,14 +51,31 @@ def ask(
     except ImportError:
         chunks = []  # chromadb not installed — Gemini service falls back to its own mock
 
-    answer = generate_answer(payload.question, chunks)
+    user_key = (current_user.preferences or {}).get("gemini_api_key")
+    answer = generate_answer(payload.question, chunks, api_key=user_key)
     db.add(Message(conversation_id=conversation.id, role="assistant", content=answer))
     db.commit()
+    log_event(db, current_user.id, "question_asked", f"Asked \u201c{payload.question[:80]}\u201d in {repo.name}")
 
     return AskResponse(
         conversation_id=conversation.id,
         answer=answer,
         cited_files=CITE_RE.findall(answer),
+    )
+
+
+@router.get("/conversations", response_model=list[ConversationOut])
+def list_conversations(
+    repo_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    repo = _get_owned_repo(db, repo_id, current_user)
+    return (
+        db.query(Conversation)
+        .filter(Conversation.repository_id == repo.id)
+        .order_by(Conversation.created_at.desc())
+        .all()
     )
 
 

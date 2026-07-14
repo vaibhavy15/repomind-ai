@@ -129,7 +129,7 @@
   color: var(--cyan);
 }
 .msg-md pre {
-  background: #0a0c1c;
+  background: #14100a;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-m);
   padding: 16px 18px;

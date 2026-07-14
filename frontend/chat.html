@@ -24,11 +24,8 @@
     <button class="btn btn-ghost new-chat-btn" id="new-chat-btn">+ New chat</button>
 
     <div class="sidebar-section-label">Recent</div>
-    <nav class="sidebar-nav history-list">
-      <button class="history-item active" data-question="Where is JWT generated?">Where is JWT generated?</button>
-      <button class="history-item" data-question="Explain the database flow">Explain the database flow</button>
-      <button class="history-item" data-question="Find duplicate code">Find duplicate code</button>
-      <button class="history-item" data-question="Generate a README">Generate a README</button>
+    <nav class="sidebar-nav history-list" id="history-list">
+      <div style="padding:8px 12px; font-size:12px; color:var(--ink-3);">Loading…</div>
     </nav>
 
     <div class="sidebar-section-label">Workspace</div>
@@ -64,6 +61,10 @@
       <a href="profile.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
+      </a>
+      <a href="#" class="nav-item" data-logout>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
       </a>
     </nav>
 
@@ -130,6 +131,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="js/api.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/chat.js" defer></script>
 </body>

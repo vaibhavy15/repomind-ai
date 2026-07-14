@@ -11,6 +11,7 @@ from app.db.models import Repository, RepoFile, User
 from app.db.session import get_db
 from app.schemas.repo import RepoCreateFromUrl, RepoFileOut, RepoOut
 from app.services import embeddings_service
+from app.services.activity_service import log_event
 from app.services.repo_parser import RepoStats, clone_github_repo, parse_uploaded_zip, walk_repo
 
 router = APIRouter(prefix="/repos", tags=["repositories"])
@@ -28,7 +29,7 @@ def _persist_parsed_repo(db: Session, repo: Repository, stats: RepoStats) -> Non
         repo.complexity_score = round(
             (stats.function_count + stats.class_count * 2) / max(stats.file_count, 1), 2
         )
-        repo.security_score = 100.0  # security_scan_service would adjust this down per finding
+        repo.security_score = 100.0  # placeholder default; GET /repos/:id/analytics computes the real score live from quality_service
 
         embed_batch = []
         for f in stats.files:
@@ -63,6 +64,7 @@ def connect_from_github(
     db.add(repo)
     db.commit()
     db.refresh(repo)
+    log_event(db, current_user.id, "repo_connected", f"Connected repository \u201c{name}\u201d from GitHub")
 
     def _run():
         with tempfile.TemporaryDirectory() as tmp:
@@ -97,6 +99,7 @@ def connect_from_zip(
     db.add(repo)
     db.commit()
     db.refresh(repo)
+    log_event(db, current_user.id, "repo_connected", f"Connected repository \u201c{name}\u201d from a ZIP upload")
 
     tmp_zip = Path(tempfile.gettempdir()) / f"repomind_{uuid.uuid4()}.zip"
     tmp_zip.write_bytes(file.file.read())
@@ -135,6 +138,24 @@ def list_files(repo_id: str, db: Session = Depends(get_db), current_user: User =
     if not repo or repo.owner_id != current_user.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Repository not found")
     return db.query(RepoFile).filter(RepoFile.repository_id == repo_id).all()
+
+
+@router.get("/{repo_id}/files/content")
+def get_file_content(
+    repo_id: str,
+    path: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    repo = db.get(Repository, repo_id)
+    if not repo or repo.owner_id != current_user.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Repository not found")
+
+    file = db.query(RepoFile).filter(RepoFile.repository_id == repo_id, RepoFile.path == path).first()
+    if not file:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "File not found in this repository")
+
+    return {"path": file.path, "language": file.language, "content": file.content}
 
 
 @router.delete("/{repo_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -255,6 +255,9 @@
 .stage-row.done .stage-dot { border-color: var(--cyan); background: var(--cyan); }
 .stage-row.done .stage-dot svg { opacity: 1; }
 
+.stage-row.error { color: #ff7a90; }
+.stage-row.error .stage-dot { border-color: #ff7a90; }
+
 .stage-footer {
   text-align: center;
   margin-top: 24px;

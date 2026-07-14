@@ -49,6 +49,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
       </a>
+      <a href="#" class="nav-item" data-logout>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -80,8 +84,8 @@
     <main class="app-content">
       <div class="dash-head">
         <div>
-          <h1>Welcome back, Ada</h1>
-          <p>3 repositories indexed · ask any of them a question in Chat</p>
+          <h1 id="dash-greeting">Welcome back</h1>
+          <p id="dash-subhead">Loading your repositories…</p>
         </div>
       </div>
 
@@ -91,52 +95,6 @@
           <h3>Connect a repository</h3>
           <p>GitHub URL or ZIP upload</p>
         </button>
-
-        <article class="repo-card glass">
-          <div class="repo-card-top">
-            <div class="repo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-            <span class="repo-status"><span></span>Indexed</span>
-          </div>
-          <div>
-            <div class="repo-name">payments-service</div>
-            <div class="repo-path">acme/payments-service · 3 days ago</div>
-          </div>
-          <div class="repo-lang-row">
-            <span class="lang-chip">Python</span><span class="lang-chip">FastAPI</span><span class="lang-chip">Postgres</span>
-          </div>
-          <div class="repo-stats">
-            <div class="repo-stat"><b>312</b><span>Functions</span></div>
-            <div class="repo-stat"><b>48</b><span>Classes</span></div>
-            <div class="repo-stat"><b>4.2</b><span>Complexity</span></div>
-          </div>
-          <div class="repo-card-actions">
-            <a href="chat.html?repo=payments-service" class="btn btn-primary btn-sm">Open Chat</a>
-            <a href="#" class="btn btn-ghost btn-sm">Explore</a>
-          </div>
-        </article>
-
-        <article class="repo-card glass">
-          <div class="repo-card-top">
-            <div class="repo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-            <span class="repo-status"><span></span>Indexed</span>
-          </div>
-          <div>
-            <div class="repo-name">storefront-web</div>
-            <div class="repo-path">acme/storefront-web · 1 week ago</div>
-          </div>
-          <div class="repo-lang-row">
-            <span class="lang-chip">TypeScript</span><span class="lang-chip">React</span>
-          </div>
-          <div class="repo-stats">
-            <div class="repo-stat"><b>890</b><span>Functions</span></div>
-            <div class="repo-stat"><b>120</b><span>Classes</span></div>
-            <div class="repo-stat"><b>3.6</b><span>Complexity</span></div>
-          </div>
-          <div class="repo-card-actions">
-            <a href="chat.html?repo=storefront-web" class="btn btn-primary btn-sm">Open Chat</a>
-            <a href="#" class="btn btn-ghost btn-sm">Explore</a>
-          </div>
-        </article>
       </div>
     </main>
   </div>
@@ -197,6 +155,7 @@
   </div>
 </div>
 
+<script src="js/api.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/dashboard.js" defer></script>
 </body>

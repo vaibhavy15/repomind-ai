@@ -50,6 +50,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
       </a>
+      <a href="#" class="nav-item" data-logout>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -75,7 +79,7 @@
         <div class="settings-card glass">
           <h2>Profile</h2>
           <p class="settings-sub">Your name and email are visible to teammates you invite.</p>
-          <form data-save-form>
+          <form id="profile-form" data-save-form>
             <div class="field"><label for="set-name">Full name</label><div class="field-input"><input id="set-name" type="text" value="Ada Lovelace" /></div></div>
             <div class="field" style="margin-top:16px;"><label for="set-email">Email</label><div class="field-input"><input id="set-email" type="email" value="ada@acme.com" /></div></div>
             <div class="settings-form-actions"><button type="submit" class="btn btn-primary btn-sm">Save changes</button></div>
@@ -85,9 +89,10 @@
         <div class="settings-card glass">
           <h2>Password</h2>
           <p class="settings-sub">Use at least 8 characters, mixing letters, numbers, and symbols.</p>
-          <form data-save-form>
-            <div class="field"><label for="set-current-pw">Current password</label><div class="field-input"><input id="set-current-pw" type="password" placeholder="••••••••" /></div></div>
-            <div class="field" style="margin-top:16px;"><label for="set-new-pw">New password</label><div class="field-input"><input id="set-new-pw" type="password" placeholder="••••••••" /></div></div>
+          <form id="password-form" data-save-form>
+            <div class="field"><label for="set-current-pw">Current password</label><div class="field-input"><input id="set-current-pw" type="password" placeholder="••••••••" autocomplete="current-password" /></div></div>
+            <div class="field" style="margin-top:16px;"><label for="set-new-pw">New password</label><div class="field-input"><input id="set-new-pw" type="password" placeholder="At least 8 characters" autocomplete="new-password" /></div></div>
+            <p id="password-form-error" style="display:none; color:#ff7a90; font-size:12.5px; margin-top:10px;"></p>
             <div class="settings-form-actions"><button type="submit" class="btn btn-primary btn-sm">Update password</button></div>
           </form>
         </div>
@@ -99,12 +104,12 @@
             <label for="gemini-key">Gemini API key</label>
             <div class="api-key-row">
               <div class="field-input" style="flex:1;">
-                <input id="gemini-key" type="password" placeholder="AIza…" value="AIzaSyDemoKeyNotReal000000000" />
+                <input id="gemini-key" type="password" placeholder="AIza… (leave blank to use the server default)" value="" autocomplete="off" />
                 <button type="button" class="toggle-visibility" id="reveal-key">SHOW</button>
               </div>
-              <button type="button" class="btn btn-ghost btn-sm" style="flex-shrink:0;">Test connection</button>
+              <button type="button" class="btn btn-primary btn-sm" id="save-gemini-key" style="flex-shrink:0;">Save key</button>
             </div>
-            <p class="field-hint">Stored encrypted. Only used to call Gemini on your behalf for this workspace.</p>
+            <p class="field-hint" id="gemini-key-hint">Used for your chats instead of the server's shared key. Validated the next time you ask a question.</p>
           </div>
         </div>
 
@@ -112,15 +117,15 @@
           <h2>Notifications</h2>
           <div class="settings-row">
             <div><div class="settings-row-label">Indexing complete</div><div class="settings-row-desc">Email me when a repository finishes indexing.</div></div>
-            <div class="toggle on"></div>
+            <div class="toggle on" data-pref="notify_indexing_complete"></div>
           </div>
           <div class="settings-row">
             <div><div class="settings-row-label">Weekly digest</div><div class="settings-row-desc">A summary of security findings across all repos.</div></div>
-            <div class="toggle on"></div>
+            <div class="toggle on" data-pref="notify_weekly_digest"></div>
           </div>
           <div class="settings-row">
             <div><div class="settings-row-label">Product updates</div><div class="settings-row-desc">Occasional emails about new RepoMind features.</div></div>
-            <div class="toggle"></div>
+            <div class="toggle" data-pref="notify_product_updates"></div>
           </div>
         </div>
 
@@ -145,6 +150,7 @@
 
 <div class="save-toast glass" id="save-toast"></div>
 
+<script src="js/api.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/settings.js" defer></script>
 </body>

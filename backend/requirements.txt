@@ -8,6 +8,7 @@ pydantic-settings==2.3.4
 email-validator==2.2.0
 python-multipart==0.0.9
 python-dotenv==1.0.1
+httpx==0.28.1
 
 # AI + vector store — installed separately since they're heavy; the app boots
 # and runs without them, falling back to demo-mode answers (see

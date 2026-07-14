@@ -1,8 +1,20 @@
+(function () {
+  // Guards against this script executing twice on the same page (e.g. a
+  // duplicate <script> tag, a dev-server double-injection, or caching
+  // quirks) — without this, a second run would crash on redeclaring the
+  // top-level const/class bindings below.
+  if (window.__repomind_loaded_dashboard) return;
+  window.__repomind_loaded_dashboard = true;
+
 /* ==========================================================================
    RepoMind AI — Dashboard Interactions
-   The staged loader is fully client-side theatre for now — swap dispatchStages()
-   for a WebSocket/poll against POST /api/repos once indexing is real.
+   Real API calls via js/api.js. Indexing has no per-stage signal from the
+   backend, so the staged loader shows a client-side stage animation for feel
+   while a separate poll loop checks the real repository status to decide
+   when to actually finish or fail.
    ========================================================================== */
+
+const { apiFetch, ApiError, getUser } = window.RepoMindAPI;
 
 const overlay = document.getElementById('upload-overlay');
 const openBtns = document.querySelectorAll('[data-open-upload]');
@@ -11,6 +23,30 @@ const modalHead = document.getElementById('modal-head');
 const uploadForm = document.getElementById('upload-form');
 const stageLoader = document.getElementById('stage-loader');
 const stageDoneActions = document.getElementById('stage-done-actions');
+const repoGrid = document.getElementById('repo-grid');
+
+// -- greeting -----------------------------------------------------------
+const user = getUser();
+if (user) document.getElementById('dash-greeting').textContent = `Welcome back, ${user.name.split(' ')[0]}`;
+
+// -- load real repos on page load ------------------------------------------
+async function loadRepos() {
+  const subhead = document.getElementById('dash-subhead');
+  try {
+    const repos = await apiFetch('/repos');
+    document.querySelectorAll('.repo-card').forEach((el) => el.remove());
+    repos
+      .slice()
+      .reverse()
+      .forEach((repo) => insertRepoCard(repo));
+    subhead.textContent = repos.length
+      ? `${repos.length} ${repos.length === 1 ? 'repository' : 'repositories'} connected · ask any of them a question in Chat`
+      : 'Connect your first repository to get started.';
+  } catch (err) {
+    subhead.textContent = err instanceof ApiError ? `Couldn't load repositories: ${err.detail}` : 'Could not reach the API.';
+  }
+}
+loadRepos();
 
 function openModal() {
   overlay.classList.add('open');
@@ -25,9 +61,26 @@ overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(
 function resetModal() {
   modalHead.style.display = 'flex';
   uploadForm.style.display = 'block';
+  uploadForm.reset();
+  document.getElementById('dropzone')?.classList.remove('has-file');
+  const dzp = document.querySelector('#dropzone p');
+  if (dzp) dzp.textContent = 'Drag and drop a .zip, or click to browse';
   stageLoader.classList.remove('active');
   stageDoneActions.classList.remove('show');
-  document.querySelectorAll('.stage-row').forEach((r) => r.classList.remove('active', 'done'));
+  document.querySelectorAll('.stage-row').forEach((r) => r.classList.remove('active', 'done', 'error'));
+  document.getElementById('stage-ring-wrap').style.opacity = '1';
+  setModalError('');
+}
+
+function setModalError(message) {
+  let el = document.getElementById('modal-error');
+  if (!el) {
+    el = document.createElement('p');
+    el.id = 'modal-error';
+    el.style.cssText = 'color:#ff7a90; font-size:12.5px; margin-top:14px; text-align:center;';
+    uploadForm.appendChild(el);
+  }
+  el.textContent = message;
 }
 
 // -- upload tabs (GitHub URL vs ZIP) --------------------------------------
@@ -53,7 +106,10 @@ if (dropzone) {
   );
   dropzone.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
-    if (file) showFileName(file.name);
+    if (file) {
+      fileInput.files = e.dataTransfer.files;
+      showFileName(file.name);
+    }
   });
   fileInput.addEventListener('change', () => {
     if (fileInput.files[0]) showFileName(fileInput.files[0].name);
@@ -64,28 +120,36 @@ function showFileName(name) {
   dropzone.querySelector('p').textContent = name;
 }
 
-// -- submit -> staged loader -------------------------------------------
-uploadForm.addEventListener('submit', (e) => {
+// -- submit -> real connect call -> staged loader -------------------------
+uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  setModalError('');
   const activePanel = document.querySelector('.upload-panel.active');
-  let repoLabel = 'uploaded-project';
-  if (activePanel.id === 'panel-url') {
-    const url = document.getElementById('github-url').value.trim();
-    if (!url) return;
-    repoLabel = url.replace(/^https?:\/\/(www\.)?github\.com\//, '').replace(/\.git$/, '') || repoLabel;
-  } else if (fileInput.files[0]) {
-    repoLabel = fileInput.files[0].name.replace(/\.zip$/i, '');
-  } else {
+
+  let repo;
+  try {
+    if (activePanel.id === 'panel-url') {
+      const url = document.getElementById('github-url').value.trim();
+      if (!url) return;
+      repo = await apiFetch('/repos', { method: 'POST', body: JSON.stringify({ github_url: url }) });
+    } else {
+      if (!fileInput.files[0]) return;
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      repo = await apiFetch('/repos/upload', { method: 'POST', body: formData });
+    }
+  } catch (err) {
+    setModalError(err instanceof ApiError ? err.detail : 'Could not reach the API.');
     return;
   }
 
   modalHead.style.display = 'none';
   uploadForm.style.display = 'none';
   stageLoader.classList.add('active');
-  runStages(repoLabel);
+  runStagesAndPoll(repo.id);
 });
 
-const STAGES = [
+const STAGE_LABELS = [
   'Reading files…',
   'Parsing code…',
   'Generating embeddings…',
@@ -93,60 +157,85 @@ const STAGES = [
   'Analyzing dependencies…',
 ];
 
-function runStages(repoLabel) {
+// Advances the visual stage list on a timer (purely cosmetic — the backend
+// doesn't report per-stage progress), while a separate poll loop checks the
+// real repository status and decides when to actually finish or fail.
+function runStagesAndPoll(repoId) {
   const rows = Array.from(document.querySelectorAll('.stage-row'));
   const footer = document.getElementById('stage-footer-text');
-  let i = 0;
+  let visualStage = 0;
+  let finished = false;
 
-  function next() {
-    if (i > 0) { rows[i - 1].classList.remove('active'); rows[i - 1].classList.add('done'); }
-    if (i >= rows.length) {
+  const stageTimer = window.setInterval(() => {
+    if (finished || visualStage >= rows.length) return;
+    if (visualStage > 0) rows[visualStage - 1].classList.add('done');
+    rows[visualStage].classList.add('active');
+    footer.textContent = STAGE_LABELS[visualStage];
+    visualStage++;
+  }, 900);
+
+  const poll = window.setInterval(async () => {
+    let repo;
+    try {
+      repo = await apiFetch(`/repos/${repoId}`);
+    } catch {
+      return; // transient network hiccup — keep polling
+    }
+
+    if (repo.status === 'indexed') {
+      finished = true;
+      window.clearInterval(stageTimer);
+      window.clearInterval(poll);
+      rows.forEach((r) => { r.classList.remove('active'); r.classList.add('done'); });
       footer.textContent = 'Finished.';
       document.getElementById('stage-ring-wrap').style.opacity = '0';
       stageDoneActions.classList.add('show');
-      addRepoCard(repoLabel);
-      return;
+      document.getElementById('open-new-chat').href = `chat.html?repo=${encodeURIComponent(repo.id)}`;
+      document.getElementById('open-new-chat-label').textContent = repo.name;
+      loadRepos();
+    } else if (repo.status === 'failed') {
+      finished = true;
+      window.clearInterval(stageTimer);
+      window.clearInterval(poll);
+      rows[Math.max(0, visualStage - 1)]?.classList.add('error');
+      footer.textContent = 'Indexing failed — check the URL is public and reachable, or try a smaller ZIP.';
+      document.getElementById('stage-ring-wrap').style.opacity = '0';
     }
-    rows[i].classList.add('active');
-    footer.textContent = STAGES[i];
-    i++;
-    window.setTimeout(next, 700 + Math.random() * 500);
-  }
-  next();
+  }, 1500);
 }
 
-function addRepoCard(repoLabel) {
-  const grid = document.getElementById('repo-grid');
-  const slug = repoLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'new-repo';
+function insertRepoCard(repo) {
   const card = document.createElement('article');
   card.className = 'repo-card glass';
+  const isIndexed = repo.status === 'indexed';
+  const statusLabel = { indexed: 'Indexed', indexing: 'Indexing…', pending: 'Pending', failed: 'Failed' }[repo.status] || repo.status;
   card.innerHTML = `
     <div class="repo-card-top">
       <div class="repo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-      <span class="repo-status"><span></span>Indexed</span>
+      <span class="repo-status"><span></span>${statusLabel}</span>
     </div>
     <div>
-      <div class="repo-name">${repoLabel}</div>
-      <div class="repo-path">just now · ${Math.floor(200 + Math.random() * 900)} files</div>
-    </div>
-    <div class="repo-lang-row">
-      <span class="lang-chip">Python</span><span class="lang-chip">TypeScript</span>
+      <div class="repo-name">${escapeHtml(repo.name)}</div>
+      <div class="repo-path">${repo.source_type === 'github' ? 'GitHub' : 'ZIP upload'} · ${new Date(repo.created_at).toLocaleDateString()}</div>
     </div>
     <div class="repo-stats">
-      <div class="repo-stat"><b>${Math.floor(40 + Math.random() * 200)}</b><span>Functions</span></div>
-      <div class="repo-stat"><b>${Math.floor(4 + Math.random() * 40)}</b><span>Classes</span></div>
-      <div class="repo-stat"><b>${(3 + Math.random() * 4).toFixed(1)}</b><span>Complexity</span></div>
+      <div class="repo-stat"><b>${repo.file_count}</b><span>Files</span></div>
+      <div class="repo-stat"><b>${repo.function_count}</b><span>Functions</span></div>
+      <div class="repo-stat"><b>${repo.class_count}</b><span>Classes</span></div>
     </div>
     <div class="repo-card-actions">
-      <a href="chat.html?repo=${encodeURIComponent(slug)}" class="btn btn-primary btn-sm">Open Chat</a>
-      <a href="#" class="btn btn-ghost btn-sm">Explore</a>
+      <a href="chat.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-primary btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Open Chat</a>
+      <a href="explorer.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-ghost btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Explore</a>
     </div>
   `;
-  const connectCard = grid.querySelector('.repo-connect-card');
-  grid.insertBefore(card, connectCard.nextSibling);
+  const connectCard = repoGrid.querySelector('.repo-connect-card');
+  repoGrid.insertBefore(card, connectCard.nextSibling);
+}
 
-  document.getElementById('open-new-chat').href = `chat.html?repo=${encodeURIComponent(slug)}`;
-  document.getElementById('open-new-chat-label').textContent = repoLabel;
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 document.getElementById('modal-back-to-dash')?.addEventListener('click', closeModal);
+
+})();

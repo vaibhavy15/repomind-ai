@@ -10,7 +10,7 @@ const canvas = document.getElementById('galaxy-canvas');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x05060d, 0.028);
+scene.fog = new THREE.FogExp2(0x0b0906, 0.028);
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position.set(0, 0, 26);
@@ -57,9 +57,9 @@ function makeLabelTexture(text) {
   return { tex, aspect: w / h };
 }
 
-const glowCyan = makeGlowTexture('#4deaff');
-const glowBlue = makeGlowTexture('#4d7fff');
-const glowViolet = makeGlowTexture('#a855f7');
+const glowCyan = makeGlowTexture('#3ecfb2');
+const glowBlue = makeGlowTexture('#e6b450');
+const glowViolet = makeGlowTexture('#d1567c');
 const glowWhite = makeGlowTexture('#ffffff');
 
 /* ---------------------------------------------------------------------- */
@@ -171,7 +171,7 @@ for (let i = 0; i < nodePositions.length; i++) {
 }
 const lineGeo = new THREE.BufferGeometry();
 lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(lineGeoPositions, 3));
-const lineMat = new THREE.LineBasicMaterial({ color: 0x4d7fff, transparent: true, opacity: 0.18 });
+const lineMat = new THREE.LineBasicMaterial({ color: 0xe6b450, transparent: true, opacity: 0.18 });
 const lines = new THREE.LineSegments(lineGeo, lineMat);
 codegraph.add(lines);
 

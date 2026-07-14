@@ -18,6 +18,15 @@ class MessageOut(BaseModel):
         from_attributes = True
 
 
+class ConversationOut(BaseModel):
+    id: str
+    title: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class AskResponse(BaseModel):
     conversation_id: str
     answer: str

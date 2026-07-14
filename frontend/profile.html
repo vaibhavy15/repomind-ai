@@ -51,6 +51,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
       </a>
+      <a href="#" class="nav-item" data-logout>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -76,40 +80,26 @@
         <div class="profile-banner glass">
           <div class="profile-avatar"></div>
           <div class="profile-info">
-            <div class="profile-name">Ada Lovelace</div>
-            <div class="profile-email">ada@acme.com</div>
+            <div class="profile-name" id="profile-name">Ada Lovelace</div>
+            <div class="profile-email" id="profile-email">ada@acme.com</div>
             <div class="profile-badges">
-              <span class="profile-badge">Solo plan</span>
-              <span class="profile-badge">Member since Mar 2026</span>
+              <span class="profile-badge" id="profile-plan-badge">Solo plan</span>
+              <span class="profile-badge" id="profile-member-since">Member since —</span>
             </div>
           </div>
         </div>
 
         <div class="profile-usage">
-          <div class="stat-tile glass"><div class="stat-tile-label">Repositories</div><div class="stat-tile-value">3</div></div>
-          <div class="stat-tile glass"><div class="stat-tile-label">Questions asked</div><div class="stat-tile-value">184</div></div>
-          <div class="stat-tile glass"><div class="stat-tile-label">READMEs generated</div><div class="stat-tile-value">6</div></div>
-          <div class="stat-tile glass"><div class="stat-tile-label">Security scans run</div><div class="stat-tile-value">9</div></div>
+          <div class="stat-tile glass"><div class="stat-tile-label">Repositories</div><div class="stat-tile-value" id="usage-repos">—</div></div>
+          <div class="stat-tile glass"><div class="stat-tile-label">Questions asked</div><div class="stat-tile-value" id="usage-questions">—</div></div>
+          <div class="stat-tile glass"><div class="stat-tile-label">Files indexed</div><div class="stat-tile-value" id="usage-files">—</div></div>
+          <div class="stat-tile glass"><div class="stat-tile-label">Security scans run</div><div class="stat-tile-value" id="usage-scans">—</div></div>
         </div>
 
         <div class="settings-card glass">
           <h2>Recent activity</h2>
-          <div class="activity-list">
-            <div class="activity-row">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-              <div class="activity-text">Asked "Where is JWT generated?" in <strong>payments-service</strong></div>
-              <div class="activity-time">2h ago</div>
-            </div>
-            <div class="activity-row">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg></div>
-              <div class="activity-text">Ran a security scan on <strong>storefront-web</strong></div>
-              <div class="activity-time">1d ago</div>
-            </div>
-            <div class="activity-row">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-              <div class="activity-text">Connected repository <strong>payments-service</strong></div>
-              <div class="activity-time">3d ago</div>
-            </div>
+          <div class="activity-list" id="activity-list">
+            <div style="padding:12px 4px; font-size:13px; color:var(--ink-3);">Loading…</div>
           </div>
         </div>
 
@@ -118,6 +108,8 @@
   </div>
 </div>
 
+<script src="js/api.js" defer></script>
 <script src="js/app.js" defer></script>
+<script src="js/profile.js" defer></script>
 </body>
 </html>

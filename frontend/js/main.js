@@ -1,3 +1,11 @@
+(function () {
+  // Guards against this script executing twice on the same page (e.g. a
+  // duplicate <script> tag, a dev-server double-injection, or caching
+  // quirks) — without this, a second run would crash on redeclaring the
+  // top-level const/class bindings below.
+  if (window.__repomind_loaded_main) return;
+  window.__repomind_loaded_main = true;
+
 /* ==========================================================================
    RepoMind AI — Landing Page Interactions
    ========================================================================== */
@@ -108,3 +116,5 @@ if (proofAnswer) {
     requestAnimationFrame(step);
   }
 }
+
+})();

@@ -1,26 +1,46 @@
+(function () {
+  // Guards against this script executing twice on the same page (e.g. a
+  // duplicate <script> tag, a dev-server double-injection, or caching
+  // quirks) — without this, a second run would crash on redeclaring the
+  // top-level const/class bindings below.
+  if (window.__repomind_loaded_architecture) return;
+  window.__repomind_loaded_architecture = true;
+
 /* ==========================================================================
    RepoMind AI — Architecture Viewer Interactions
-   Diagram source is generated from the mocked dependency graph. Swap DIAGRAMS
-   for a real GET /api/repos/:id/architecture?view= call once graph_builder.py
-   is wired to actually walk the repo.
+   Dependency Graph is real — built from actual Python import statements via
+   GET /repos/:id/dependency-graph (see quality_service.build_dependency_graph).
+   The other four diagrams stay illustrative templates: deriving a real
+   system/frontend/backend/database flow diagram from arbitrary source needs
+   real semantic understanding, not just static analysis — out of scope for
+   a heuristic scanner.
    ========================================================================== */
 
 const params = new URLSearchParams(window.location.search);
-const repoName = params.get('repo') || 'payments-service';
-document.getElementById('repo-crumb').textContent = repoName;
-document.getElementById('sidebar-repo-name').textContent = repoName;
+const repoId = params.get('repo');
+
+if (repoId && window.RepoMindAPI) {
+  window.RepoMindAPI.apiFetch(`/repos/${repoId}`)
+    .then((repo) => {
+      document.getElementById('repo-crumb').textContent = repo.name;
+      document.getElementById('sidebar-repo-name').textContent = repo.name;
+    })
+    .catch(() => {
+      /* keep the placeholder name if this fails — diagrams below are illustrative anyway */
+    });
+}
 
 mermaid.initialize({
   startOnLoad: false,
   theme: 'dark',
   themeVariables: {
-    background: '#05060d',
-    primaryColor: '#10143a',
-    primaryTextColor: '#f4f6ff',
-    primaryBorderColor: '#4d7fff',
-    lineColor: '#4deaff',
-    secondaryColor: '#a855f7',
-    tertiaryColor: '#0b0f2e',
+    background: '#0b0906',
+    primaryColor: '#33240f',
+    primaryTextColor: '#f7f0e2',
+    primaryBorderColor: '#e6b450',
+    lineColor: '#3ecfb2',
+    secondaryColor: '#d1567c',
+    tertiaryColor: '#241a10',
     fontFamily: 'JetBrains Mono, monospace',
     fontSize: '13px',
   },
@@ -36,17 +56,6 @@ const DIAGRAMS = {
     E --> G[ChromaDB embeddings]
     E --> H[Gemini 2.5]
     H --> I[Response + citations]`,
-
-  dependency: `graph LR
-    jwt[auth/jwt.py] --> login[auth/login.py]
-    login --> middleware[auth/middleware.py]
-    middleware --> routes[api/routes.py]
-    routes --> users[api/endpoints/users.py]
-    routes --> tx[api/endpoints/transactions.py]
-    users --> models[db/models.py]
-    tx --> models
-    models --> session[db/session.py]
-    parser[services/repo_parser.py] --> graph[services/graph_builder.py]`,
 
   frontend: `flowchart LR
     Login[Login Page] --> Dash[Dashboard]
@@ -90,12 +99,29 @@ const DIAGRAMS = {
 
 const container = document.getElementById('diagram-container');
 let renderCount = 0;
+let dependencyGraphCache = null;
 
 async function renderDiagram(key) {
   container.innerHTML = '<div class="arch-loading">Rendering diagram…</div>';
   const id = `mermaid-${key}-${renderCount++}`;
+
+  let source = DIAGRAMS[key];
+  if (key === 'dependency') {
+    try {
+      if (!dependencyGraphCache) {
+        if (!repoId || !window.RepoMindAPI) throw new Error('no repo selected');
+        const res = await window.RepoMindAPI.apiFetch(`/repos/${repoId}/dependency-graph`);
+        dependencyGraphCache = res.mermaid;
+      }
+      source = dependencyGraphCache;
+    } catch (err) {
+      container.innerHTML = `<div class="arch-loading">${err instanceof window.RepoMindAPI.ApiError ? err.detail : 'Could not load the dependency graph — open this page from a repository.'}</div>`;
+      return;
+    }
+  }
+
   try {
-    const { svg } = await mermaid.render(id, DIAGRAMS[key]);
+    const { svg } = await mermaid.render(id, source);
     container.innerHTML = svg;
   } catch (err) {
     container.innerHTML = '<div class="arch-loading">Could not render this diagram.</div>';
@@ -107,7 +133,15 @@ document.querySelectorAll('.arch-tab').forEach((tab) => {
     document.querySelectorAll('.arch-tab').forEach((t) => t.classList.remove('active'));
     tab.classList.add('active');
     renderDiagram(tab.dataset.diagram);
+
+    const note = document.getElementById('arch-note');
+    note.lastChild.textContent =
+      tab.dataset.diagram === 'dependency'
+        ? ' Built live from this repository\u2019s actual Python import statements.'
+        : ' This is a generic template, not generated from your code — only Dependency Graph reflects the actual repository.';
   });
 });
 
 renderDiagram('flowchart');
+
+})();

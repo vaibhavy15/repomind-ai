@@ -26,12 +26,16 @@ def _mock_answer(question: str, context_chunks: list[dict]) -> str:
     )
 
 
-def generate_answer(question: str, context_chunks: list[dict]) -> str:
+def generate_answer(question: str, context_chunks: list[dict], api_key: str | None = None) -> str:
     """
     context_chunks: [{"path": "auth/jwt.py", "content": "...snippet..."}, ...]
     as retrieved from ChromaDB via embeddings_service.query_similar_chunks().
+
+    api_key: pass a user's own key (from User.preferences["gemini_api_key"],
+    set via Settings) to use it instead of the server-wide GEMINI_API_KEY.
     """
-    if not settings.GEMINI_API_KEY:
+    key = api_key or settings.GEMINI_API_KEY
+    if not key:
         return _mock_answer(question, context_chunks)
 
     try:
@@ -39,7 +43,7 @@ def generate_answer(question: str, context_chunks: list[dict]) -> str:
     except ImportError:
         return _mock_answer(question, context_chunks)
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    client = genai.Client(api_key=key)
     context_text = "\n\n".join(f"### {c['path']}\n{c['content']}" for c in context_chunks)
     prompt = f"{SYSTEM_PROMPT}\n\n--- CODEBASE CONTEXT ---\n{context_text}\n\n--- QUESTION ---\n{question}"
 

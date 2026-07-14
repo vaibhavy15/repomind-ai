@@ -49,6 +49,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
       </a>
+      <a href="#" class="nav-item" data-logout>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -72,24 +76,25 @@
 
     <main class="app-content">
       <div class="arch-tabs glass">
-        <button class="arch-tab active" data-diagram="flowchart">System Flowchart</button>
-        <button class="arch-tab" data-diagram="dependency">Dependency Graph</button>
-        <button class="arch-tab" data-diagram="frontend">Frontend Flow</button>
-        <button class="arch-tab" data-diagram="backend">Backend Flow</button>
-        <button class="arch-tab" data-diagram="database">Database Flow</button>
+        <button class="arch-tab active" data-diagram="flowchart">System Flowchart<span class="nav-soon" style="margin-left:8px;">Template</span></button>
+        <button class="arch-tab" data-diagram="dependency">Dependency Graph<span class="nav-soon" style="margin-left:8px; color:var(--cyan); border-color:var(--cyan-soft);">Live</span></button>
+        <button class="arch-tab" data-diagram="frontend">Frontend Flow<span class="nav-soon" style="margin-left:8px;">Template</span></button>
+        <button class="arch-tab" data-diagram="backend">Backend Flow<span class="nav-soon" style="margin-left:8px;">Template</span></button>
+        <button class="arch-tab" data-diagram="database">Database Flow<span class="nav-soon" style="margin-left:8px;">Template</span></button>
       </div>
 
       <div class="arch-diagram-card glass" id="diagram-container"></div>
 
-      <div class="arch-note">
+      <div class="arch-note" id="arch-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        Regenerated automatically whenever this repository is re-indexed.
+        This is a generic template, not generated from your code — only Dependency Graph reflects the actual repository.
       </div>
     </main>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<script src="js/api.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/architecture.js" defer></script>
 </body>
