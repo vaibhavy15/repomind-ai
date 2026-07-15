@@ -1,3 +1,4 @@
+import subprocess
 import tempfile
 import uuid
 from pathlib import Path
@@ -18,37 +19,61 @@ router = APIRouter(prefix="/repos", tags=["repositories"])
 
 
 def _persist_parsed_repo(db: Session, repo: Repository, stats: RepoStats) -> None:
-    """Writes parsed files to the DB, indexes them into ChromaDB, and updates
-    the repository's summary stats. Runs in a background task after the
-    initial 202 response so the client can poll /repos/:id for status."""
+    """Writes parsed files to the DB and updates the repository's summary
+    stats. Runs in a background task after the initial 202 response so the
+    client can poll /repos/:id for status.
+
+    Vector-store indexing (ChromaDB) is handled separately by the caller and
+    is deliberately NOT allowed to affect repo.status here — a successfully
+    parsed repo should never be reported as "failed" just because the vector
+    index (a nice-to-have for chat) had trouble.
+    """
+    repo.file_count = stats.file_count
+    repo.function_count = stats.function_count
+    repo.class_count = stats.class_count
+    # simple complexity proxy until a real per-function analyzer is added
+    repo.complexity_score = round(
+        (stats.function_count + stats.class_count * 2) / max(stats.file_count, 1), 2
+    )
+    repo.security_score = 100.0  # placeholder default; GET /repos/:id/analytics computes the real score live from quality_service
+
+    embed_batch = []
+    for f in stats.files:
+        row = RepoFile(repository_id=repo.id, path=f.path, language=f.language, content=f.content)
+        db.add(row)
+        db.flush()  # populate row.id
+        embed_batch.append({"id": row.id, "path": row.path, "content": row.content})
+
+    repo.status = "indexed"
+    repo.failure_reason = None
+    db.commit()
+    return embed_batch
+
+
+def _index_embeddings_best_effort(repo_id: str, embed_batch: list[dict]) -> None:
+    """Best-effort only. Any failure here (chromadb not installed, a model
+    download hiccup, a permissions issue on the persist directory, etc.) is
+    logged and swallowed — chat still works for this repo, just without
+    vector-narrowed context (see gemini_service._mock_answer / generate_answer)."""
     try:
-        repo.file_count = stats.file_count
-        repo.function_count = stats.function_count
-        repo.class_count = stats.class_count
-        # simple complexity proxy until a real per-function analyzer is added
-        repo.complexity_score = round(
-            (stats.function_count + stats.class_count * 2) / max(stats.file_count, 1), 2
-        )
-        repo.security_score = 100.0  # placeholder default; GET /repos/:id/analytics computes the real score live from quality_service
+        embeddings_service.index_repository_files(repo_id, embed_batch)
+    except Exception as exc:
+        print(f"[repomind] embeddings indexing skipped for repo {repo_id}: {exc!r}")
 
-        embed_batch = []
-        for f in stats.files:
-            row = RepoFile(repository_id=repo.id, path=f.path, language=f.language, content=f.content)
-            db.add(row)
-            db.flush()  # populate row.id
-            embed_batch.append({"id": row.id, "path": row.path, "content": row.content})
 
-        repo.status = "indexed"
-        db.commit()
-
-        try:
-            embeddings_service.index_repository_files(repo.id, embed_batch)
-        except ImportError:
-            pass  # chromadb not installed in this environment — indexing skipped, rows still saved
-    except Exception:
-        repo.status = "failed"
-        db.commit()
-        raise
+def _mark_failed(session_factory, repo_id: str, reason: str) -> None:
+    """Guaranteed to run even if parsing/cloning throws before a repo row
+    was ever touched — nothing should be able to get stuck on 'indexing'
+    forever with no explanation."""
+    session = session_factory()
+    try:
+        repo_row = session.get(Repository, repo_id)
+        if repo_row:
+            repo_row.status = "failed"
+            repo_row.failure_reason = reason[:500]
+            session.commit()
+    finally:
+        session.close()
 
 
 @router.post("", response_model=RepoOut, status_code=status.HTTP_202_ACCEPTED)
@@ -67,18 +92,32 @@ def connect_from_github(
     log_event(db, current_user.id, "repo_connected", f"Connected repository \u201c{name}\u201d from GitHub")
 
     def _run():
-        with tempfile.TemporaryDirectory() as tmp:
-            dest = Path(tmp) / "repo"
-            clone_github_repo(payload.github_url, dest)
-            stats = walk_repo(dest)
-            # needs its own session since this runs after the request's session closes
-            from app.db.session import SessionLocal
-            session = SessionLocal()
-            try:
-                repo_row = session.get(Repository, repo.id)
-                _persist_parsed_repo(session, repo_row, stats)
-            finally:
-                session.close()
+        from app.db.session import SessionLocal
+
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                dest = Path(tmp) / "repo"
+                clone_github_repo(payload.github_url, dest)
+                stats = walk_repo(dest)
+                if stats.file_count == 0:
+                    raise RuntimeError(
+                        "Cloned successfully but found 0 readable files — check the URL points to a real, "
+                        "public (or token-accessible) repository with source files at the root."
+                    )
+                # needs its own session since this runs after the request's session closes
+                session = SessionLocal()
+                try:
+                    repo_row = session.get(Repository, repo.id)
+                    embed_batch = _persist_parsed_repo(session, repo_row, stats)
+                finally:
+                    session.close()
+            _index_embeddings_best_effort(repo.id, embed_batch)
+        except subprocess.CalledProcessError as exc:
+            stderr = (exc.stderr or b"").decode(errors="ignore").strip()
+            reason = f"git clone failed: {stderr or 'repository not found, private without access, or unreachable'}"
+            _mark_failed(SessionLocal, repo.id, reason)
+        except Exception as exc:
+            _mark_failed(SessionLocal, repo.id, f"{type(exc).__name__}: {exc}")
 
     background_tasks.add_task(_run)
     return repo
@@ -106,14 +145,22 @@ def connect_from_zip(
 
     def _run():
         from app.db.session import SessionLocal
-        session = SessionLocal()
+
         try:
             stats = parse_uploaded_zip(tmp_zip)
-            repo_row = session.get(Repository, repo.id)
-            _persist_parsed_repo(session, repo_row, stats)
+            if stats.file_count == 0:
+                raise RuntimeError("Extracted the ZIP but found 0 readable source files — check it isn't empty or all-binary.")
+            session = SessionLocal()
+            try:
+                repo_row = session.get(Repository, repo.id)
+                embed_batch = _persist_parsed_repo(session, repo_row, stats)
+            finally:
+                session.close()
+            _index_embeddings_best_effort(repo.id, embed_batch)
+        except Exception as exc:
+            _mark_failed(SessionLocal, repo.id, f"{type(exc).__name__}: {exc}")
         finally:
             tmp_zip.unlink(missing_ok=True)
-            session.close()
 
     background_tasks.add_task(_run)
     return repo

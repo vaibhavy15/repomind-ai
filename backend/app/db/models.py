@@ -62,6 +62,7 @@ class Repository(Base):
     source_type: Mapped[str] = mapped_column(String)  # "github" | "zip"
     source_url: Mapped[str | None] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, default="pending")  # pending|indexing|indexed|failed
+    failure_reason: Mapped[str | None] = mapped_column(String, nullable=True)
     file_count: Mapped[int] = mapped_column(Integer, default=0)
     function_count: Mapped[int] = mapped_column(Integer, default=0)
     class_count: Mapped[int] = mapped_column(Integer, default=0)

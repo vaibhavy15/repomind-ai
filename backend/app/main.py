@@ -3,11 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import analytics, auth, chat, oauth, quality, repos
 from app.core.config import settings
-from app.db.base import Base
-from app.db.session import engine
 
-# dev convenience only — use Alembic migrations for anything beyond local dev
-Base.metadata.create_all(bind=engine)
+# Schema is managed by Alembic now, not an implicit create_all() at startup.
+# Run `alembic upgrade head` before starting the server (see README) — this
+# is what actually fixes the "column X does not exist" class of error for
+# good, instead of silently doing nothing when tables already exist but are
+# missing a newly-added column (which is exactly what create_all() did).
 
 app = FastAPI(title=settings.APP_NAME, debug=settings.DEBUG)
 

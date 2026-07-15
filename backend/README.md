@@ -8,23 +8,52 @@ stack before wiring up either one.
 
 ## Quickstart
 
-> **If you've run this backend before and have a `backend/repomind.db` file
-> already:** delete it before starting. This update added OAuth fields, a
-> preferences column, and a new `events` table to the `User` model — there's
-> no migration tool wired up yet (see "Known gaps"), so an old SQLite file
-> will throw errors on the new columns. Losing local dev data here is fine;
-> just `rm backend/repomind.db` and restart.
-
 ```bash
 cd backend
 python -m venv venv && source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env                                  # then edit as needed
+alembic upgrade head                                   # creates/updates the schema — see below
 uvicorn app.main:app --reload --port 8000
 ```
 
 Visit `http://localhost:8000/docs` for interactive Swagger docs generated
 from the actual route/schema definitions.
+
+### Migrations (Alembic)
+
+Schema is managed by Alembic now — `alembic upgrade head` is a required step
+before starting the server, on a fresh DB or an existing one. The app no
+longer auto-creates tables on startup (it used to via `create_all()`, which
+silently did *nothing* when a table already existed but was missing a new
+column — that's exactly how the "column X does not exist" error happens).
+
+**Fresh database:** `alembic upgrade head` creates everything. Nothing else needed.
+
+**Existing database, hitting a "column ... does not exist" error right now:**
+this means your DB predates a schema change. Fix it without losing data:
+
+```sql
+-- run whichever ALTER matches the missing column the error names, e.g.:
+ALTER TABLE repositories ADD COLUMN failure_reason VARCHAR;
+```
+```bash
+alembic stamp head   # tells Alembic "this DB is now at the latest schema", without re-running CREATE TABLE
+```
+
+If you'd rather not hand-write the `ALTER` (or don't care about existing
+dev data), it's simpler to just drop and rebuild:
+```sql
+DROP SCHEMA public CASCADE; CREATE SCHEMA public;   -- Postgres
+```
+```bash
+rm backend/repomind.db   # SQLite
+alembic upgrade head
+```
+
+**Going forward, after pulling any future update to this project:** always
+run `alembic upgrade head` again before starting the server — if the models
+changed, there'll be a new migration file waiting to be applied.
 
 ## What's real vs. what's stubbed
 
@@ -87,6 +116,11 @@ backend/
 │       └── gemini_service.py     # stub: Gemini call with demo-mode fallback, per-user key override
 ├── requirements.txt
 ├── .env.example
+├── alembic.ini
+├── alembic/
+│   ├── env.py                    # wired to app.core.config.settings + full model metadata
+│   └── versions/
+│       └── ..._baseline_schema.py
 └── README.md
 ```
 
@@ -202,7 +236,6 @@ CORS defaults to `allow_origins=["*"]` with `allow_credentials=False` (safe sinc
 
 ## Known gaps (by design, for a first pass)
 
-- No Alembic migrations — `Base.metadata.create_all()` runs on startup, fine for dev, not for schema evolution in production.
-- No rate limiting on `/auth/login` (flagged by the mock security scanner in the frontend demo, appropriately).
-- `security_score` is a placeholder constant; a real scanner (regex/AST rules for hardcoded secrets, SQL string formatting, etc.) isn't implemented yet.
+- No rate limiting on `/auth/login` (flagged by the real security scanner in the Analytics page, appropriately).
 - Background indexing uses FastAPI `BackgroundTasks`, which runs in-process — fine for a demo, but move to a real task queue (Celery/RQ/arq) before indexing anything at scale.
+- Migrations exist now (`alembic/versions/`), but there's only one baseline revision. **When you change `app/db/models.py`, generate a new one instead of hand-editing the DB**: `alembic revision --autogenerate -m "describe the change"`, review the generated file (autogenerate isn't perfect — it won't detect some renames/type changes correctly), then `alembic upgrade head`.

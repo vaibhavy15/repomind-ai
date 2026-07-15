@@ -2,6 +2,6 @@ venv/
 __pycache__/
 *.pyc
 .env
-repomind.db
+*.db
 chroma_data/
 *.egg-info/

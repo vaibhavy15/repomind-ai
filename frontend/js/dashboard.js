@@ -30,6 +30,8 @@ const user = getUser();
 if (user) document.getElementById('dash-greeting').textContent = `Welcome back, ${user.name.split(' ')[0]}`;
 
 // -- load real repos on page load ------------------------------------------
+let backgroundPollTimer = null;
+
 async function loadRepos() {
   const subhead = document.getElementById('dash-subhead');
   try {
@@ -42,6 +44,20 @@ async function loadRepos() {
     subhead.textContent = repos.length
       ? `${repos.length} ${repos.length === 1 ? 'repository' : 'repositories'} connected · ask any of them a question in Chat`
       : 'Connect your first repository to get started.';
+
+    const stillWorking = repos.some((r) => r.status === 'indexing' || r.status === 'pending');
+    if (stillWorking && !backgroundPollTimer) {
+      backgroundPollTimer = window.setInterval(async () => {
+        const fresh = await apiFetch('/repos').catch(() => null);
+        if (!fresh) return;
+        if (!fresh.some((r) => r.status === 'indexing' || r.status === 'pending')) {
+          window.clearInterval(backgroundPollTimer);
+          backgroundPollTimer = null;
+        }
+        document.querySelectorAll('.repo-card').forEach((el) => el.remove());
+        fresh.slice().reverse().forEach((repo) => insertRepoCard(repo));
+      }, 3000);
+    }
   } catch (err) {
     subhead.textContent = err instanceof ApiError ? `Couldn't load repositories: ${err.detail}` : 'Could not reach the API.';
   }
@@ -198,8 +214,9 @@ function runStagesAndPoll(repoId) {
       window.clearInterval(stageTimer);
       window.clearInterval(poll);
       rows[Math.max(0, visualStage - 1)]?.classList.add('error');
-      footer.textContent = 'Indexing failed — check the URL is public and reachable, or try a smaller ZIP.';
+      footer.textContent = repo.failure_reason || 'Indexing failed — check the URL is public and reachable, or try a smaller ZIP.';
       document.getElementById('stage-ring-wrap').style.opacity = '0';
+      loadRepos();
     }
   }, 1500);
 }
@@ -217,6 +234,7 @@ function insertRepoCard(repo) {
     <div>
       <div class="repo-name">${escapeHtml(repo.name)}</div>
       <div class="repo-path">${repo.source_type === 'github' ? 'GitHub' : 'ZIP upload'} · ${new Date(repo.created_at).toLocaleDateString()}</div>
+      ${repo.status === 'failed' && repo.failure_reason ? `<div style="font-size:11.5px; color:#ff7a90; margin-top:6px; line-height:1.5;">${escapeHtml(repo.failure_reason)}</div>` : ''}
     </div>
     <div class="repo-stats">
       <div class="repo-stat"><b>${repo.file_count}</b><span>Files</span></div>
@@ -224,12 +242,29 @@ function insertRepoCard(repo) {
       <div class="repo-stat"><b>${repo.class_count}</b><span>Classes</span></div>
     </div>
     <div class="repo-card-actions">
-      <a href="chat.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-primary btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Open Chat</a>
-      <a href="explorer.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-ghost btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Explore</a>
+      ${
+        repo.status === 'failed'
+          ? `<button type="button" class="btn btn-ghost btn-sm delete-repo-btn" data-repo-id="${repo.id}" style="flex:1; justify-content:center;">Delete</button>`
+          : `<a href="chat.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-primary btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Open Chat</a>
+             <a href="explorer.html?repo=${encodeURIComponent(repo.id)}" class="btn btn-ghost btn-sm" ${isIndexed ? '' : 'aria-disabled="true" style="pointer-events:none; opacity:.5;"'}>Explore</a>`
+      }
     </div>
   `;
   const connectCard = repoGrid.querySelector('.repo-connect-card');
   repoGrid.insertBefore(card, connectCard.nextSibling);
+
+  card.querySelector('.delete-repo-btn')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = 'Deleting…';
+    try {
+      await apiFetch(`/repos/${btn.dataset.repoId}`, { method: 'DELETE' });
+      card.remove();
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+    }
+  });
 }
 
 function escapeHtml(s) {

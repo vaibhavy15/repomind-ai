@@ -12,6 +12,7 @@ class RepoOut(BaseModel):
     name: str
     source_type: str
     status: str
+    failure_reason: str | None = None
     file_count: int
     function_count: int
     class_count: int
