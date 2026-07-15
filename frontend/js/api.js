@@ -13,7 +13,11 @@
    http://localhost:8000 (e.g. in index.html: <script>window.REPOMIND_API_BASE = '...'</script>).
    ========================================================================== */
 
-const API_BASE = window.REPOMIND_API_BASE || 'http://localhost:8000/api';
+const API_BASE =
+  window.REPOMIND_API_BASE ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:8000/api"
+    : "https://repomind-ai-1-ebwn.onrender.com/api");
 const TOKENS_KEY = 'repomind_tokens';
 const USER_KEY = 'repomind_user';
 

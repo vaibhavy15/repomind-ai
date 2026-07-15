@@ -56,6 +56,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\repomind-ai\backend" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="python -m venv venv &amp;&amp; source venv/bin/activate" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="repomind-ai" />
@@ -145,7 +150,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784096047069</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary=".">
+      <option name="closed" value="true" />
+      <created>1784096723999</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1784096723999</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
