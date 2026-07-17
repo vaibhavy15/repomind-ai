@@ -28,6 +28,9 @@ app.include_router(analytics.router, prefix="/api")
 app.include_router(quality.router, prefix="/api")
 
 
-@app.get("/api/health")
-def health():
-    return {"status": "ok", "app": settings.APP_NAME}
+@app.get("/")
+def root():
+    return {
+        "message": "RepoMind AI Backend is running",
+        "health": "/api/health"
+    }
