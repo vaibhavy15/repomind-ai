@@ -31,6 +31,5 @@ app.include_router(quality.router, prefix="/api")
 @app.get("/")
 def root():
     return {
-        "message": "RepoMind AI Backend is running",
-        "health": "/api/health"
+        "RepoMind AI Backend is running"
     }
