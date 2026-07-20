@@ -164,12 +164,14 @@ def my_usage(db: Session = Depends(get_db), current_user: User = Depends(get_cur
         .count()
     )
     security_scans_run = db.query(Event).filter(Event.user_id == current_user.id, Event.type == "security_scan_viewed").count()
+    readmes_generated = db.query(Event).filter(Event.user_id == current_user.id, Event.type == "readme_generated").count()
 
     return {
         "repositories": repo_count,
         "files_indexed": sum(f[0] for f in files_indexed),
         "questions_asked": questions_asked,
         "security_scans_run": security_scans_run,
+        "readmes_generated": readmes_generated,
     }
 
 

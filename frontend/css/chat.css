@@ -139,6 +139,12 @@
 }
 .msg-md pre code { font-family: var(--font-mono); background: none; border: none; padding: 0; color: var(--ink-0); }
 
+.msg-md table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+.msg-md th, .msg-md td { padding: 8px 12px; border: 1px solid var(--panel-border); text-align: left; }
+.msg-md th { background: var(--panel); font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); }
+.msg-md td { color: var(--ink-1); }
+.msg-md hr { border: none; border-top: 1px solid var(--panel-border); margin: 20px 0; }
+
 .cite-chip {
   display: inline-flex;
   align-items: center;

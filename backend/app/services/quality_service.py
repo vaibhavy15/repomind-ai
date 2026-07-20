@@ -257,6 +257,103 @@ def compute_duplicate_pct(files: list[dict], performance_issues: list[Finding]) 
     return round(100 * len(flagged_files) / len(py_files), 1)
 
 
+# -- bugs: common real Python bug patterns, AST-based ---------------------
+def find_potential_bugs(files: list[dict]) -> list[Finding]:
+    """Classic, well-understood bug shapes — the kind flake8/pylint also
+    flag — detected via ast rather than text matching, so they're accurate
+    rather than guessed."""
+    bugs: list[Finding] = []
+
+    for f in files:
+        if f["language"] != "Python":
+            continue
+        try:
+            tree = ast.parse(f["content"])
+        except SyntaxError:
+            continue
+
+        for node in ast.walk(tree):
+            # bare `except:` swallows every exception, including Ctrl+C and real bugs
+            if isinstance(node, ast.ExceptHandler) and node.type is None:
+                bugs.append(Finding(
+                    severity="medium",
+                    title="Bare except clause",
+                    description="`except:` with no exception type catches everything, including KeyboardInterrupt and SystemExit — it silently hides bugs that should crash loudly.",
+                    file_path=f["path"], line=node.lineno,
+                ))
+
+            # mutable default arguments are shared across every call, a classic footgun
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for default in node.args.defaults + node.args.kw_defaults:
+                    if isinstance(default, (ast.List, ast.Dict, ast.Set)):
+                        bugs.append(Finding(
+                            severity="medium",
+                            title=f"Mutable default argument in {node.name}()",
+                            description="A list/dict/set default is created once and shared across every call to this function, not recreated per-call — a frequent source of bugs that only show up after the function is called more than once.",
+                            file_path=f["path"], line=node.lineno,
+                        ))
+
+            # `== None` / `== True` / `== False` should be identity checks
+            if isinstance(node, ast.Compare):
+                for op, comparator in zip(node.ops, node.comparators):
+                    if isinstance(op, (ast.Eq, ast.NotEq)) and isinstance(comparator, ast.Constant) and comparator.value in (None, True, False):
+                        bugs.append(Finding(
+                            severity="low",
+                            title=f"Comparison with {comparator.value!r} using ==",
+                            description=f"Use `is` / `is not` to compare with {comparator.value!r} instead of `==` / `!=` — equality operators can be overridden and give surprising results here.",
+                            file_path=f["path"], line=node.lineno,
+                        ))
+
+            # unreachable code: any statement immediately after return/raise/break/continue in the same block
+            body_lists = [n for n in (getattr(node, "body", None), getattr(node, "orelse", None), getattr(node, "finalbody", None)) if n]
+            for stmts in body_lists:
+                for i, stmt in enumerate(stmts[:-1]):
+                    if isinstance(stmt, (ast.Return, ast.Raise, ast.Break, ast.Continue)):
+                        bugs.append(Finding(
+                            severity="low",
+                            title="Unreachable code",
+                            description=f"Code after this {type(stmt).__name__.lower()} statement can never execute.",
+                            file_path=f["path"], line=stmts[i + 1].lineno,
+                        ))
+
+    return bugs
+
+
+# -- overall quality score + synthesized recommendations ------------------
+def compute_quality_score(security_score: float, bug_count: int, performance_issue_count: int, file_count: int) -> float:
+    """A single headline number for the Code Analyzer. Starts from the
+    security score (already 0-100) and applies a mild density-based penalty
+    for bugs/performance issues, so a huge repo with a handful of issues
+    isn't penalized as hard as a tiny one riddled with them."""
+    if file_count == 0:
+        return security_score
+    density_penalty = min(30, ((bug_count * 2) + performance_issue_count) / max(file_count, 1) * 10)
+    return round(max(0.0, security_score - density_penalty), 1)
+
+
+def synthesize_recommendations(security_findings, bugs, performance_issues, duplicate_pct: float) -> list[str]:
+    """Plain-language recommendations derived from the actual counts above —
+    not a canned list, so it changes (and can go empty) based on real findings."""
+    recs: list[str] = []
+    high_sec = sum(1 for x in security_findings if x.severity == "high")
+    if high_sec:
+        recs.append(f"Address {high_sec} high-severity security finding{'s' if high_sec != 1 else ''} before deploying — see the Security tab for exact file locations.")
+    bare_excepts = sum(1 for x in bugs if x.title == "Bare except clause")
+    if bare_excepts:
+        recs.append(f"Replace {bare_excepts} bare `except:` clause{'s' if bare_excepts != 1 else ''} with a specific exception type so real errors don't get silently swallowed.")
+    unused_imports = sum(1 for x in performance_issues if x.title.startswith("Possibly unused import"))
+    if unused_imports:
+        recs.append(f"Remove {unused_imports} unused import{'s' if unused_imports != 1 else ''} to reduce noise and speed up module load slightly.")
+    if duplicate_pct >= 15:
+        recs.append(f"{duplicate_pct}% of files contain a structurally duplicated function — consider extracting shared logic into a common module.")
+    nested_loops = sum(1 for x in performance_issues if "nested loops" in x.title)
+    if nested_loops:
+        recs.append(f"{nested_loops} function{'s have' if nested_loops != 1 else ' has'} deeply nested loops — worth profiling if this repo processes large inputs.")
+    if not recs:
+        recs.append("No significant issues found by the current checks — that's a good sign, though it isn't a substitute for a full manual review.")
+    return recs
+
+
 # -- API endpoint detection (FastAPI/Flask-style decorators) --------------
 _ROUTE_RE = re.compile(
     r'@(?:\w+\.)?(?:router|app)\.(get|post|put|patch|delete)\(\s*["\']([^"\']+)["\']', re.IGNORECASE

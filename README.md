@@ -4,17 +4,32 @@ An AI-powered codebase understanding platform. Upload a repository — GitHub
 URL or ZIP — and ask it questions in plain language. Answers cite the exact
 files they came from.
 
-This repo has two independent halves that aren't wired together yet:
+This repo has two halves that are now **wired together**:
 
 ```
 repomind-ai/
-├── frontend/     — fully built, cinematic dark-space UI, runs standalone with mock data
+├── frontend/     — cinematic dark-space UI, calls the backend directly via js/api.js
 └── backend/      — real FastAPI service (auth, DB, indexing), AI calls stubbed until you add a Gemini key
 ```
 
-## Run the frontend (no setup required)
+## Run both together
 
-Open `frontend/index.html` directly in a browser, or serve the folder:
+**1. Start the backend first:**
+
+```bash
+cd backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+> Upgrading from an older copy of this project and seeing a `column ... does
+> not exist` error? See "Migrations" in `backend/README.md` — it's a one-line
+> fix that doesn't lose your data.
+
+**2. Serve the frontend:**
 
 ```bash
 cd frontend
@@ -22,38 +37,30 @@ python3 -m http.server 5500
 # visit http://localhost:5500
 ```
 
-Every page works today — signup, dashboard with the cinematic indexing
-sequence, AI chat with streaming markdown + citations, repository explorer,
-architecture diagrams (Mermaid), analytics (Chart.js), settings, and profile
-— all against realistic mock data defined at the top of each page's `js/*.js`
-file, clearly commented with what real endpoint should replace it.
+Sign up, connect a repo (a small public GitHub URL or a `.zip`), and it'll
+really index, really show up in chat, and really populate the explorer and
+analytics pages — all against the backend you just started. If your backend
+isn't on `http://localhost:8000`, set `window.REPOMIND_API_BASE` before
+`js/api.js` loads on each page.
 
-## Run the backend
+Login/session state lives in the browser's `localStorage` (this is a real
+multi-page site, not an SPA, so it needs to survive full page navigations)
+and auto-refreshes expired tokens.
 
-```bash
-cd backend
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn app.main:app --reload --port 8000
-# docs at http://localhost:8000/docs
-```
+## What's real vs. still a UI preview
 
-Auth, the database, and repository parsing (file walking, Python AST
-function/class counts, ZIP upload, `git clone` from a GitHub URL) are real
-and tested. Chat retrieval (ChromaDB) and generation (Gemini) are lazily
-stubbed — the app boots and every endpoint responds without either one
-installed, using clearly-labeled demo answers, and starts making real calls
-the moment you install `chromadb`/`google-genai` and set `GEMINI_API_KEY`.
-See `backend/README.md` for the full breakdown of what's real vs. stubbed,
-and the API reference.
-
-## Connecting them
-
-They're not wired together yet on purpose — the frontend needed to be
-demoable on its own, and the backend needed to be verifiably correct on its
-own. `backend/README.md` has a short section on exactly which mock functions
-in the frontend JS map to which live endpoints.
+Auth (including GitHub/Google OAuth — bring your own client ID/secret), repo
+connect/upload/indexing/polling, chat ask + history, the file explorer, and
+the full account-management surface (profile edit, password change, forgot/
+reset password, account deletion, per-user Gemini key, notification prefs)
+are all real, tested against a live server. The Analytics page's security
+findings, API endpoint detection, and performance issues are real too — a
+heuristic static-analysis pass (AST-based for Python, regex for other
+languages) over the actual indexed source, not mock data. The Architecture
+page's "Dependency Graph" tab is real (built from actual Python imports);
+its other four diagrams stay generic templates on purpose — deriving those
+from arbitrary source needs real semantic understanding, not static
+analysis. `backend/README.md` has the full real-vs-stubbed breakdown.
 
 ## Full file structure
 
@@ -67,6 +74,7 @@ repomind-ai/
 │   ├── login.html                  Auth: log in
 │   ├── signup.html                 Auth: sign up
 │   ├── forgot-password.html        Auth: reset flow
+│   ├── oauth-callback.html         Receives tokens after GitHub/Google sign-in redirects back
 │   ├── dashboard.html              Repo list + connect-repository modal (cinematic indexing)
 │   ├── chat.html                   AI chat: streaming markdown, citations, suggested prompts
 │   ├── explorer.html               Repository file tree + code preview + AI Explain
@@ -90,16 +98,19 @@ repomind-ai/
 │   │   └── profile.css             Profile banner, usage grid, activity list
 │   │
 │   ├── js/
+│   │   ├── api.js                  Shared API client: tokens, auth guard, fetch wrapper w/ auto-refresh
 │   │   ├── galaxy.js               Three.js background: starfield, nebula, codegraph constellation
 │   │   ├── main.js                 Landing page: nav state, scroll reveals, FAQ, card glow
-│   │   ├── auth.js                 Login/signup/forgot-password validation + mock submit
-│   │   ├── app.js                  Shared: mobile sidebar toggle
-│   │   ├── dashboard.js            Upload modal, dropzone, staged indexing sequence
-│   │   ├── chat.js                 Mock KB, markdown streaming, citation rendering, history
-│   │   ├── explorer.js             Mock file tree, search filter, file preview, AI Explain
-│   │   ├── architecture.js         Mermaid diagram definitions + tab switching
-│   │   ├── analytics.js            Chart.js setup, animated counters, tab switching
-│   │   └── settings.js             Toggles, mock save, danger-zone confirm
+│   │   ├── auth.js                 Login/signup wired to the real API; forgot-password stays mocked
+│   │   ├── oauth-callback.js       Reads tokens from the OAuth redirect and completes sign-in
+│   │   ├── app.js                  Shared: auth guard, user chrome, mobile sidebar, logout
+│   │   ├── dashboard.js            Real repo list/connect/upload + status polling
+│   │   ├── chat.js                 Real ask endpoint + real conversation history
+│   │   ├── explorer.js             Real file tree + file content + AI Explain (real chat call)
+│   │   ├── architecture.js         Mermaid diagram definitions + tab switching (illustrative)
+│   │   ├── analytics.js            Real stats/charts; security/API/perf tabs stay illustrative
+│   │   ├── settings.js             Real profile load; password/notifications/plan stay UI-only
+│   │   └── profile.js              Real name/email load; usage + activity stay illustrative
 │   │
 │   └── assets/                     (empty — favicon/OG image go here)
 │
@@ -125,13 +136,15 @@ repomind-ai/
         │   ├── deps.py             get_current_user() from bearer token
         │   └── routes/
         │       ├── auth.py         signup / login / refresh / me
+        │       ├── oauth.py        GitHub/Google OAuth2 login + callback
         │       ├── repos.py        connect (URL or ZIP), list, get, files, delete
         │       ├── chat.py         ask, conversation history
         │       └── analytics.py    repo stats
         └── services/
             ├── repo_parser.py      Real: file walk, Python AST stats, git clone
             ├── embeddings_service.py  Stub: ChromaDB indexing + query
-            └── gemini_service.py   Stub: Gemini call with demo-mode fallback
+            ├── gemini_service.py   Stub: Gemini call with demo-mode fallback
+            └── oauth_service.py    Real: GitHub/Google OAuth2 code exchange + profile fetch
 ```
 
 ## Design system

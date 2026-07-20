@@ -68,7 +68,9 @@ changed, there'll be a new migration file waiting to be applied.
 | ZIP upload → file walk → Python AST function/class counts | **Real.** Try it — upload any `.zip` of a small repo. |
 | GitHub URL → `git clone` → same parsing | **Real** (needs network + optionally a token for private repos). |
 | Database models & relationships (Postgres/SQLite via SQLAlchemy) | **Real.** |
-| Security findings / duplicate-function / dead-import / nested-loop detection | **Real, heuristic.** AST-based for Python (full accuracy), regex-based for other languages. Not a full SAST tool — see `quality_service.py`'s module docstring for exactly what it does and doesn't catch. |
+| Security findings / duplicate-function / dead-import / nested-loop / common-bug-pattern detection | **Real, heuristic.** AST-based for Python (full accuracy), regex-based for other languages. Covers hardcoded secrets, disabled JWT verification, SQL f-strings, bare `except:`, mutable default args, `== None`, unreachable code, unused imports, duplicate functions. Not a full SAST tool — see `quality_service.py`'s module docstring for exactly what it does and doesn't catch. |
+| Code Analyzer (quality score + recommendations) | **Real.** The quality score and recommendations are computed live from the same findings shown in Security/Performance — see `compute_quality_score()` / `synthesize_recommendations()`. |
+| README Generator | **Real.** Folder structure, language breakdown, API endpoint table, and install commands are built from actual indexed data. The overview paragraph is AI-generated when a Gemini key is set (server or per-user), otherwise a template sentence. |
 | API endpoint detection | **Real, heuristic.** Regex over FastAPI/Flask-style route decorators. Won't detect Express/Django/other frameworks yet. |
 | Dependency graph (Architecture page) | **Real** for the "Dependency Graph" tab — built from actual Python `import` statements. The other four diagrams (System Flowchart, Frontend/Backend Flow, Database Flow) are intentionally generic templates; deriving those from arbitrary source needs real semantic understanding, not static analysis. |
 | Chat retrieval (ChromaDB) | **Stubbed.** Lazily imported; without `chromadb` installed, `query_similar_chunks` is skipped and the route degrades gracefully. |
@@ -159,6 +161,8 @@ All routes are prefixed with `/api`.
 | GET | `/repos/{id}/performance` | ✓ | Real issues: unused imports, deeply nested loops, structurally duplicated functions |
 | GET | `/repos/{id}/api-endpoints` | ✓ | Real FastAPI/Flask-style route detection, with an auth-dependency heuristic |
 | GET | `/repos/{id}/dependency-graph` | ✓ | Real Mermaid graph built from actual Python imports resolved to in-repo files |
+| GET | `/repos/{id}/code-analysis` | ✓ | Consolidated Code Analyzer data: quality score, bugs, security, performance, recommendations |
+| GET | `/repos/{id}/readme` | ✓ | Generates a real README.md from indexed structure (AI-enhanced overview if a Gemini key is set) |
 
 ## Setting up GitHub / Google sign-in
 

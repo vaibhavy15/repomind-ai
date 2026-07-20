@@ -49,6 +49,10 @@ function animateCount(el) {
 
 if (!repoId) {
   document.getElementById('repo-crumb').textContent = 'no repository selected';
+  window.renderNoRepoEmptyState(document.querySelector('.app-content'), {
+    title: 'No repository selected',
+    message: 'Analytics are computed per repository. Open this page from a repository on your dashboard, or pick one below.',
+  });
 } else {
   init();
 }

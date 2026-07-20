@@ -5,9 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7c1536e0-e823-469d-852f-70e608762156" name="Changes" comment="..">
-      <change beforePath="$PROJECT_DIR$/.idea/repomind-ai.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/repomind-ai.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/api/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/routes/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/api/routes/quality.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/routes/quality.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/services/quality_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/quality_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/analytics.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/analytics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/architecture.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/architecture.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/chat.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/css/chat.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/css/chat.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/explorer.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/explorer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/js/analytics.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/js/analytics.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/js/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/js/explorer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/js/explorer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/settings.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +185,23 @@
       <option name="project" value="LOCAL" />
       <updated>1784101265770</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="..">
+      <option name="closed" value="true" />
+      <created>1784273509973</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1784273509973</updated>
+    </task>
+    <task id="LOCAL-00009" summary="..">
+      <option name="closed" value="true" />
+      <created>1784273697982</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1784273697982</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

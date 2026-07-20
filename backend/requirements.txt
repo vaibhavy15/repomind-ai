@@ -1,38 +1,18 @@
-# ==========================
-# Web Framework
-# ==========================
-fastapi==0.116.1
-uvicorn[standard]==0.35.0
-
-# ==========================
-# Database
-# ==========================
-SQLAlchemy==2.0.43
-alembic==1.16.4
-psycopg2-binary==2.9.10
-
-# ==========================
-# Authentication
-# ==========================
-python-jose[cryptography]==3.5.0
-bcrypt==4.3.0
-email-validator==2.3.0
-python-multipart==0.0.20
-
-# ==========================
-# Configuration
-# ==========================
-pydantic==2.11.7
-pydantic-settings==2.10.1
-python-dotenv==1.1.1
-
-# ==========================
-# HTTP Client
-# ==========================
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+sqlalchemy==2.0.30
+alembic==1.13.2
+psycopg2-binary==2.9.9
+python-jose[cryptography]==3.3.0
+bcrypt==4.0.1
+pydantic-settings==2.3.4
+email-validator==2.2.0
+python-multipart==0.0.9
+python-dotenv==1.0.1
 httpx==0.28.1
 
-# ==========================
-# AI
-# ==========================
-chromadb==1.0.16
-google-genai==1.28.0
+# AI + vector store — installed separately since they're heavy; the app boots
+# and runs without them, falling back to demo-mode answers (see
+# app/services/gemini_service.py and app/services/embeddings_service.py)
+chromadb==0.5.0
+google-genai==0.3.0

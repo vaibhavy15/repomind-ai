@@ -25,7 +25,10 @@ const previewPathEl = document.getElementById('preview-path-label');
 const LANG_HLJS = { Python: 'python', TypeScript: 'typescript', JavaScript: 'javascript', Markdown: 'markdown', JSON: 'json', SQL: 'sql', YAML: 'yaml' };
 
 if (!repoId) {
-  treeRoot.innerHTML = '<p style="font-size:12.5px; color:var(--ink-2); padding:8px;">No repository selected — head back to the dashboard.</p>';
+  window.renderNoRepoEmptyState(document.querySelector('.explorer-shell'), {
+    title: 'No repository selected',
+    message: 'The file explorer needs a repository to browse. Open this page from a repository on your dashboard, or pick one below.',
+  });
 } else {
   init();
 }
